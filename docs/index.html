@@ -242,8 +242,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 <section id="calendarApp" class="hidden">
   <div class="panel">
     <div class="calendar-toolbar">
-      <div><h2>📅 Calendarios</h2><p class="calendar-muted">Tus calendarios y eventos se guardan en Firebase y se sincronizan automáticamente.</p></div>
-      <button id="calendarBackBtn">← Volver a asignaturas</button>
+      <div><h2>📅 Calendarios</h2><p class="calendar-muted">Consulta los calendarios sin iniciar sesión. Solo el administrador puede crear o modificar contenido.</p></div>
+      <div class="calendar-actions"><button id="calShowLoginBtn" type="button">🔐 Acceso administrador</button><button id="calLogoutBtn" class="hidden" type="button">Cerrar sesión</button><button id="calendarBackBtn" type="button">← Volver a asignaturas</button></div>
     </div>
     <p id="calStatus" class="calendar-status" role="status">Comprobando la configuración de Firebase…</p>
   </div>
@@ -259,12 +259,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <li>En el módulo de Firebase que hay al final del HTML, pega la configuración pública de tu aplicación y tu UID en las dos constantes indicadas. No pegues ahí la contraseña.</li>
       <li>Publica la página en Firebase Hosting o ejecútala en un dominio autorizado (por ejemplo, localhost). Añade ese dominio en <b>Authentication → Settings → Authorized domains</b>.</li>
     </ol>
-    <p class="calendar-muted">Firebase Authentication gestiona la contraseña de forma segura. Firestore almacena los calendarios y sus eventos. Las reglas impiden que otra cuenta cree o modifique tus calendarios.</p>
+    <p class="calendar-muted">Firebase Authentication gestiona la contraseña de forma segura. Firestore almacena los calendarios y sus eventos. Cualquier visitante puede consultar los calendarios; las reglas impiden que otros usuarios creen o modifiquen calendarios y eventos.</p>
   </div>
 
   <div id="calLoginPanel" class="panel hidden">
-    <h2>Acceso de administrador</h2>
-    <p class="calendar-muted">Inicia sesión con el correo y la contraseña de tu usuario administrador de Firebase.</p>
+    <div class="calendar-toolbar"><h2>Acceso de administrador</h2><button id="calCloseLoginBtn" type="button">Cerrar</button></div>
+    <p class="calendar-muted">Inicia sesión con el correo y la contraseña de tu usuario administrador de Firebase. Los visitantes no necesitan iniciar sesión para consultar el calendario.</p>
     <form id="calLoginForm">
       <div class="calendar-fields">
         <label>Correo electrónico<input id="calEmail" type="email" autocomplete="username" required></label>
@@ -274,13 +274,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     </form>
   </div>
 
-  <div id="calAdminPanel" class="calendar-shell hidden">
+  <div id="calAdminPanel" class="calendar-shell">
     <div class="panel">
       <div class="calendar-toolbar">
-        <div><h2>Administrar calendarios</h2><p id="calSignedUser" class="calendar-muted"></p></div>
-        <button id="calLogoutBtn">Cerrar sesión</button>
+        <div><h2>Calendario</h2><p id="calSignedUser" class="calendar-muted">Vista pública: consulta los calendarios sin iniciar sesión.</p></div>
       </div>
-      <form id="calCreateForm">
+      <form id="calCreateForm" class="hidden">
         <h3>Crear un calendario nuevo</h3>
         <div class="calendar-fields">
           <label>Nombre del calendario<input id="calNewName" maxlength="70" placeholder="Ej. Calendario del curso" required></label>
@@ -317,7 +316,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <div id="calEventsList" class="calendar-events"></div>
       </div>
 
-      <div class="panel">
+      <div class="panel hidden" id="calEventFormPanel">
         <h2 id="calEventFormHeading">Añadir evento</h2>
         <form id="calEventForm">
           <div class="calendar-fields">
@@ -2396,10 +2395,17 @@ function firebaseReady() {
     !firebaseConfig[key].startsWith("PEGA_AQUI")
   ) && ADMIN_UID && !ADMIN_UID.startsWith("PEGA_AQUI");
 }
-function showLogin() {
-  configGuide.classList.add("hidden");
-  loginPanel.classList.remove("hidden");
-  adminPanel.classList.add("hidden");
+function setAdminMode(isAdmin) {
+  byId("calCreateForm").classList.toggle("hidden", !isAdmin);
+  byId("calEventFormPanel").classList.toggle("hidden", !isAdmin);
+  byId("calShowLoginBtn").classList.toggle("hidden", !!signedUser);
+  byId("calLogoutBtn").classList.toggle("hidden", !signedUser);
+  byId("calSignedUser").textContent = isAdmin
+    ? "Sesión iniciada como administrador: " + (signedUser.email || signedUser.uid)
+    : (signedUser
+        ? "Sesión iniciada sin permisos de administración. Modo de solo lectura."
+        : "Vista pública: puedes consultar los calendarios sin iniciar sesión.");
+  renderEventsForSelectedDay();
 }
 function startCalendarListener() {
   if (calendarListener) calendarListener();
@@ -2513,10 +2519,10 @@ function renderEventsForSelectedDay() {
       <h4>${escapeCalendarText(item.title || "Evento")}</h4>
       <p>${time}</p>
       ${item.description ? `<p>${escapeCalendarText(item.description)}</p>` : ""}
-      <div class="calendar-event-actions">
+      ${signedUser && signedUser.uid === ADMIN_UID ? `<div class="calendar-event-actions">
         <button type="button" data-cal-action="edit" data-event-id="${escapeCalendarText(item.id)}">Editar</button>
         <button type="button" data-cal-action="delete" data-event-id="${escapeCalendarText(item.id)}">Eliminar</button>
-      </div>
+      </div>` : ""}
     </article>`;
   }).join("");
 }
@@ -2626,6 +2632,14 @@ byId("calendarBackBtn").addEventListener("click", () => {
   byId("heroDesc").textContent = "Elige una asignatura y después el RA que quieras estudiar.";
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
+byId("calShowLoginBtn").addEventListener("click", () => {
+  loginPanel.classList.toggle("hidden");
+  if (!loginPanel.classList.contains("hidden")) {
+    byId("calEmail").focus();
+    loginPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+});
+byId("calCloseLoginBtn").addEventListener("click", () => loginPanel.classList.add("hidden"));
 byId("calLoginForm").addEventListener("submit", submitCalendarLogin);
 byId("calLogoutBtn").addEventListener("click", async () => {
   try { await signOut(auth); }
@@ -2691,52 +2705,27 @@ if (!firebaseReady()) {
 } else {
   try {
     configGuide.classList.add("hidden");
-    loginPanel.classList.remove("hidden");
+    loginPanel.classList.add("hidden");
     const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+
+    // Espera a que Firebase restaure la sesión. Después carga los calendarios:
+    // la lectura es pública y no exige iniciar sesión.
     onAuthStateChanged(auth, user => {
       signedUser = user;
-      if (!user) {
-        if (calendarListener) calendarListener();
-        if (eventsListener) eventsListener();
-        calendarListener = null;
-        eventsListener = null;
-        calendars = [];
-        events = [];
-        selectedCalendarId = "";
-        activeEventsCalendarId = "";
-        loginPanel.classList.remove("hidden");
-        adminPanel.classList.add("hidden");
-        byId("calEmail").value = "";
-        byId("calPassword").value = "";
-        setStatus("Sesión cerrada. Inicia sesión con tu cuenta administradora.");
-        return;
-      }
-      if (user.uid !== ADMIN_UID) {
-        if (calendarListener) calendarListener();
-        if (eventsListener) eventsListener();
-        calendarListener = null;
-        eventsListener = null;
-        calendars = [];
-        events = [];
-        selectedCalendarId = "";
-        activeEventsCalendarId = "";
-        loginPanel.classList.add("hidden");
-        adminPanel.classList.add("hidden");
-        byId("calSignedUser").textContent = user.email || "Usuario autenticado";
-        adminPanel.classList.remove("hidden");
-        byId("calCreateForm").classList.add("hidden");
-        workspace.classList.add("hidden");
-        noCalendarsBox.classList.add("hidden");
-        setStatus("Esta cuenta no tiene permisos de administrador. Cierra sesión y utiliza la cuenta autorizada.", true);
-        return;
-      }
-      byId("calCreateForm").classList.remove("hidden");
-      byId("calSignedUser").textContent = "Sesión iniciada como " + (user.email || user.uid);
+      const isAdmin = !!user && user.uid === ADMIN_UID;
       loginPanel.classList.add("hidden");
-      adminPanel.classList.remove("hidden");
+      setAdminMode(isAdmin);
       startCalendarListener();
+
+      if (user && !isAdmin) {
+        setStatus("Puedes consultar el calendario, pero esta cuenta no tiene permisos para modificarlo.", true);
+      } else if (isAdmin) {
+        setStatus("Sesión de administrador iniciada. Puedes crear calendarios y gestionar eventos.");
+      } else {
+        setStatus("Calendario público conectado. No hace falta iniciar sesión para consultar los eventos.");
+      }
     });
   } catch (error) {
     setStatus("Error al iniciar Firebase: " + error.message, true);
