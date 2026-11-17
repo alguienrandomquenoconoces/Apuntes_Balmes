@@ -21,7 +21,7 @@ firebase.json            Configuración opcional de Firebase Hosting / reglas
 1. Crea un repositorio nuevo en GitHub (por ejemplo `portal-estudio-smx`).
 2. Sube **el contenido de esta carpeta** a la raíz del repositorio (arrastra los archivos en *Add file → Upload files*; `index.html` debe quedar en la raíz, no dentro de otra carpeta).
 3. Ve a **Settings → Pages**. En *Build and deployment* elige **Deploy from a branch**, rama `main` y carpeta `/ (root)`. Guarda.
-4. Espera uno o dos minutos. La web estará en `[https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/](https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/)`.
+4. Espera uno o dos minutos. La web estará en [https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/](https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/).
 
 ### Para que el calendario funcione en GitHub Pages
 
