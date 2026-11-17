@@ -21,13 +21,13 @@ firebase.json            Configuración opcional de Firebase Hosting / reglas
 1. Crea un repositorio nuevo en GitHub (por ejemplo `portal-estudio-smx`).
 2. Sube **el contenido de esta carpeta** a la raíz del repositorio (arrastra los archivos en *Add file → Upload files*; `index.html` debe quedar en la raíz, no dentro de otra carpeta).
 3. Ve a **Settings → Pages**. En *Build and deployment* elige **Deploy from a branch**, rama `main` y carpeta `/ (root)`. Guarda.
-4. Espera uno o dos minutos. La web estará en `https://TU_USUARIO.github.io/NOMBRE_DEL_REPO/`.
+4. Espera uno o dos minutos. La web estará en `[https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/](https://alguienrandomquenoconoces.github.io/Apuntes_Balmes/)`.
 
 ### Para que el calendario funcione en GitHub Pages
 
 - Cualquiera puede **consultar** el calendario sin configurar nada más.
 - Para que el administrador pueda **iniciar sesión**, añade tu dominio de GitHub Pages en Firebase:
-  *Authentication → Settings → Authorized domains → Add domain* → `TU_USUARIO.github.io`.
+  *Authentication → Settings → Authorized domains → Add domain* → `alguienrandomquenoconoces.github.io`.
 - Las reglas de `firestore.rules` se publican en Firebase (consola de Firebase → Firestore → Reglas, o con `firebase deploy --only firestore:rules`). GitHub Pages no las aplica.
 
 ## Prueba en local
