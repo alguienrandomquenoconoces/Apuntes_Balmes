@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apuntes · Selector de asignaturas</title>
+<script src="assets/js/theme.js"></script>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<header><div class="hero">
+<h1 id="title">📚 Apuntes de estudio</h1>
+<p id="heroDesc">Elige una asignatura y después un RA.</p>
+<div class="toolbar"><button id="homeBtn" class="hidden">🏠 Asignaturas</button><select id="subjSel" class="hidden" aria-label="Cambiar de asignatura"></select><button type="button" onclick="location.href='calendario.html'">📅 Calendarios</button><button id="themeBtn">🌙 Cambiar tema</button><button onclick="window.print()">🖨️ Imprimir / guardar PDF</button></div>
+</div></header>
+<main>
+<section id="home"><div class="panel"><h2>Elige una asignatura</h2><p class="muted">Primero selecciona la asignatura y después el RA.</p><div class="subjgrid" id="subjGrid"></div></div></section>
+<section id="raHome" class="hidden"><div class="panel"><p class="muted">ASIGNATURA SELECCIONADA</p><h2 id="raSubjectTitle"></h2><p class="muted">Ahora elige el RA.</p><div class="subjgrid" id="raGrid"></div><div class="btnrow"><button id="backSubjectsBtn">← Volver a asignaturas</button></div></div></section>
+
+<div id="subject" class="hidden">
+<div class="tabs">
+<button class="active" data-tab="study">📘 Apuntes resumidos</button>
+<button data-tab="test">📝 Examen tipo test</button>
+<button data-tab="key">⭐ Repaso rápido</button>
+</div>
+<section id="study" class="tabcontent">
+<div class="panel searchpanel"><div class="searchrow">
+<input type="search" id="searchInput" placeholder="Buscar una palabra en los apuntes..." autocomplete="off">
+<button class="primary" id="searchBtn">🔍 Buscar</button><button id="prevBtn" title="Anterior">◀</button><button id="nextBtn" title="Siguiente">▶</button><button id="clearBtn">✖ Limpiar</button>
+</div><div id="searchStatus" class="muted"></div></div>
+<div id="notes"></div>
+</section>
+
+<section id="test" class="tabcontent hidden">
+<div class="panel" id="setup"><h2>Configura tu examen tipo test</h2>
+<p id="setupDescription">Elige la dificultad, si quieres incluir preguntas escritas y cuántas preguntas quieres hacer. Cada dificultad tiene 20 preguntas tipo test y hasta 10 escritas; la modalidad mixta reúne las tres dificultades.</p>
+<p class="muted" id="opNote"></p>
+<div class="setup-grid">
+<label>Dificultad<select id="diff"></select></label>
+<label>Número de preguntas<div class="range-wrap"><div><span class="range-value" id="numValue">10</span> <span class="muted">preguntas en total</span></div><input type="range" id="num" min="1" max="20" value="10" step="1"><div class="range-labels"><span>1</span><span id="rangeMax">20</span></div></div></label>
+</div>
+<div class="written-config">
+<label class="written-toggle"><input type="checkbox" id="includeWritten"> Incluir preguntas escritas</label>
+<div id="writtenCountWrap" class="range-wrap hidden">
+  <div><span class="range-value" id="writtenValue">5</span> <span class="muted">preguntas escritas</span></div>
+  <input type="range" id="writtenCount" min="1" max="10" value="5" step="1">
+  <div class="range-labels"><span>1</span><span id="writtenMax">10</span></div>
+</div>
+<p class="muted" id="writtenHelp">Por defecto solo se incluirán preguntas tipo test. Activa la casilla para añadir preguntas escritas.</p>
+</div>
+<p class="muted" id="availTxt"></p>
+<div class="btnrow"><button id="allBtn">Todas las disponibles</button><button class="primary" id="startBtn">▶ Empezar test</button></div>
+</div>
+<div class="panel hidden" id="quiz"><h2>Examen tipo test</h2><p class="muted" id="quizInfo"></p>
+<div id="testControls">
+<p class="muted" id="quizHelp">Verás una pregunta cada vez. Al seleccionar una opción en las preguntas tipo test, aparecerá inmediatamente si has acertado o fallado y cuál era la respuesta correcta. Las preguntas escritas no se corrigen automáticamente ni cuentan como error; podrás consultar una respuesta orientativa.</p>
+<div id="questionCount" class="muted"></div>
+<div class="progress"><span id="bar"></span></div>
+<div id="questions"></div>
+<div class="btnrow" id="quizNav"><button id="prevQuestionBtn">← Anterior</button><button class="primary" id="nextQuestionBtn">Siguiente →</button><button class="primary hidden" id="correctBtn">Finalizar y corregir</button><button id="resetBtn">Nuevo test</button></div>
+</div>
+<div id="result"></div>
+</div>
+</section>
+
+<section id="key" class="tabcontent hidden"><div id="keyBox"></div></section>
+</div>
+
+
+
+</main>
+<footer>Material de repaso creado a partir de los apuntes proporcionados</footer>
+<template id="notes-ipo"><div class="panel"><h2>Cómo estudiar este resumen</h2><p>Abre cada apartado, aprende la idea principal y explícala con tus palabras. Termina con el test sin mirar los apuntes. Los términos legales y de emergencias están en catalán/castellano tal como aparecen en el temario.</p><span class="tag">IPO</span><span class="tag">SMX · ASIX</span><span class="tag">PRL</span></div>
+
+<details class="topic" open><summary>1. Trabajo, condiciones de trabajo y salud</summary><div class="inside">
+<p><b>Trabajo:</b> actividad social organizada que, con personas, tecnología, materiales, energía y organización, logra objetivos y cubre necesidades.</p>
+<p><b>Condiciones de trabajo:</b> todo aspecto del trabajo que puede ocasionar un daño a la salud.</p>
+<p><b>Salud:</b> equilibrio físico, mental y social. La salud mental también es salud laboral: estrés, fatiga e insatisfacción. <i>Ej.: guardias e incidencias fuera de horario de un técnico de sistemas.</i></p>
+</div></details>
+
+<details class="topic"><summary>2. Riesgo y daños derivados del trabajo</summary><div class="inside">
+<div class="grid"><div class="mini"><b>Riesgo laboral</b><br>Posibilidad de que una persona sufra un daño derivado del trabajo. Exige proximidad al peligro. <i>SMX: manipular un equipo conectado con el cable dañado.</i></div>
+<div class="mini"><b>Riesgo grave e inminente</b><br>Puede materializarse racionalmente en un futuro inmediato y causar un daño grave. El trabajador puede interrumpir la actividad y abandonar el puesto. <i>ASIX: extinción averiada en un CPD con conductores quemados.</i></div></div>
+<p><b>Daños derivados del trabajo:</b> enfermedades, patologías o lesiones sufridas con motivo u ocasión del trabajo: accidente de trabajo, enfermedad profesional, fatiga, estrés e insatisfacción laboral.</p>
+<p><b>Clasificación de accidentes:</b> <b>incidente</b> (sin lesiones ni daños), <b>accidente blanco</b> (solo daños materiales), <b>leve</b> (solo primeros auxilios), <b>grave</b> (consecuencias graves o mortales).</p>
+</div></details>
+
+<details class="topic"><summary>3. Accidente de trabajo y enfermedad profesional</summary><div class="inside">
+<p><b>Accidente de trabajo (legal):</b> lesión corporal sufrida con ocasión o a consecuencia del trabajo por cuenta ajena. <b>Para la prevención:</b> cualquier suceso que interrumpe un proceso de trabajo organizado. <i>Ej.: caída de una escalera colocando un punto de acceso Wi-Fi.</i></p>
+<p><b>In itinere:</b> al ir al trabajo o volver a casa, por camino y tiempo normales, con el medio habitual y sin imprudencia temeraria. En teletrabajo se puede aplicar la presunción de accidente en tiempo y lugar de trabajo.</p>
+<p><b>No son accidente de trabajo:</b> imprudencia temeraria, fuerza mayor ajena al trabajo y dolo del trabajador.</p>
+<p><b>Enfermedad profesional:</b> contraída por trabajar por cuenta ajena en actividades y con agentes incluidos en el cuadro oficial (RD 1299/2006). Factores: tiempo de exposición y características personales, concentración del contaminante y presencia simultánea de varios. <i>ASIX: hipoacusia por ruido continuado en un CPD.</i></p>
+<table><tr><th>Accidente</th><th>Enfermedad profesional</th></tr>
+<tr><td>Súbito e instantáneo</td><td>Desarrollo lento</td></tr>
+<tr><td>Agente material o energía fuera de control</td><td>Condiciones ambientales</td></tr>
+<tr><td>Lesión traumática</td><td>Lesión orgánica o funcional</td></tr>
+<tr><td>Sin restricción legal</td><td>Debe estar incluida en una norma</td></tr></table>
+<p>Las enfermedades laborales no catalogadas se tratan como accidente de trabajo.</p>
+</div></details>
+
+<details class="topic"><summary>4. Prevención, factores de riesgo, técnicas y costes</summary><div class="inside">
+<p><b>Prevención:</b> medidas en todas las fases de la actividad para evitar o reducir riesgos.</p>
+<p><b>Factores de riesgo:</b> condiciones de seguridad, medio ambiente de trabajo, características del trabajo y organización del trabajo.</p>
+<div class="grid"><div class="mini"><b>Técnicas previas al accidente</b><ul><li>Inspección de seguridad</li><li>Análisis del trabajo</li><li>Análisis estadístico</li></ul></div><div class="mini"><b>Técnicas posteriores</b><ul><li>Notificación y registro</li><li>Investigación</li><li>Análisis de costes</li></ul></div></div>
+<h3>Especialidades de la prevención</h3>
+<ul><li><b>Seguridad en el trabajo:</b> aspectos físicos que provocan accidentes.</li><li><b>Higiene industrial:</b> agentes que provocan enfermedades.</li><li><b>Ergonomía:</b> fatiga y posturas (SMX: pantallas de visualización, RD 488/1997).</li><li><b>Psicosociología aplicada:</b> problemas mentales y organización.</li><li><b>Medicina del trabajo:</b> enfermedades derivadas de la actividad.</li></ul>
+<h3>Coste de accidentes y enfermedades</h3>
+<p>Jornales perdidos, recargos de primas, sanciones; daños a equipos y materiales; interrupciones y retrasos; contratación y formación de personal nuevo; pérdida de imagen y responsabilidad civil.</p>
+<h3>Riesgos más frecuentes</h3>
+<p>Caídas al mismo y a distinto nivel, golpes y choques, atrapamientos, cortes y pinchazos, atropellos por vehículos, contactos térmicos y eléctricos, explosiones e incendios. <i>ASIX: contacto eléctrico en un rack e incendio por sobrecarga.</i></p>
+</div></details>
+
+<details class="topic"><summary>5. Marco legal, principios, obligaciones y derechos</summary><div class="inside">
+<ul><li>Constitución y Estatuto de los Trabajadores (RDL 2/2015).</li><li>Ley General de la Seguridad Social (RDL 8/2015).</li><li><b>Ley 31/1995 de Prevención de Riesgos Laborales (LPRL)</b> y sus reales decretos.</li><li>Teletrabajo y desconexión digital: Ley 10/2021 y LO 3/2018. Sanciones: LISOS.</li></ul>
+<p>La LPRL promueve la seguridad y salud con medidas preventivas y da derecho a protección, consulta y participación. <b>Nuevas figuras:</b> servicio de prevención, delegados de prevención y comité de seguridad y salud.</p>
+<h3>Principios de la actividad preventiva</h3>
+<p>Evitar y evaluar riesgos · combatirlos en el origen · adaptar el trabajo a la persona · tener en cuenta la evolución técnica · sustituir lo peligroso · planificar · <b>protección colectiva antes que individual</b> · dar instrucciones. La prevención se integra en la organización, los procesos, los niveles jerárquicos y las condiciones de trabajo.</p>
+<table><tr><th>Responsable</th><th>Obligaciones</th></tr>
+<tr><td>Empresario</td><td>Plan de prevención, evaluación de riesgos, planificación, información y formación, emergencias, vigilancia de la salud y coordinación de actividades.</td></tr>
+<tr><td>Trabajador</td><td>Velar por su seguridad, usar bien equipos y protecciones, seguir instrucciones e informar de peligros.</td></tr>
+<tr><td>Fabricante</td><td>Equipos y productos seguros, bien etiquetados y con instrucciones de uso.</td></tr></table>
+<p><b>Derechos:</b> protección eficaz (información sobre riesgos y emergencias), consulta y participación (formación preventiva adecuada), información ante riesgos graves e inminentes y vigilancia periódica de la salud, y protección específica (maternidad, menores y trabajadores especialmente sensibles).</p>
+</div></details>
+
+<details class="topic"><summary>6. Seguridad en el trabajo: lugar y herramientas</summary><div class="inside">
+<p><b>Cinco ámbitos:</b> lugar de trabajo, máquinas/equipos/herramientas, instalaciones, incendios y manipulación y transporte de cargas (Ley 31/1995 y RD 39/1997).</p>
+<p><b>Lugar de trabajo (RD 486/1997):</b> edificios, zonas sin edificar, servicios y comedores. Riesgos: caídas, golpes, cortes, atrapamientos, contactos térmicos y eléctricos, explosiones e incendios.</p>
+<ul><li>Pasillos y escaleras libres de obstáculos y bien iluminados.</li><li>Señalizar esquinas y obstáculos; separar circuitos de vehículos y peatones.</li><li>Suelos antideslizantes, barandillas, orden y limpieza. <i>SMX: cables del aula fuera de los pasos. ASIX: pasillo libre alrededor de los racks.</i></li></ul>
+<h3>Herramientas</h3>
+<p><b>Causas de lesiones:</b> uso inadecuado, herramientas defectuosas, almacenamiento incorrecto, cortes y proyecciones. <b>Prevención:</b> herramientas de calidad usadas solo para su fin, formación y EPI, mantenimiento y buen almacenamiento (RD 1215/1997 y RD 773/1997 de EPI).</p>
+<ul><li><b>Manuales:</b> mangos sueltos o astillados, bocas gastadas, medida o tipo inadecuado. <i>Nunca como palanca, cincel o martillo.</i> SMX: destornillador de la medida del tornillo, nunca sobre la mano.</li><li><b>Portátiles</b> (radial, taladro, sierra, soldadura): disco o broca incorrectos, falta de protector, enchufes deteriorados. Soldadura: humos metálicos, radiación UV e IR, proyecciones, contactos eléctricos e incendio.</li><li><b>Antes:</b> comprobar el estado, conocerla y elegirla bien, inspeccionar el lugar. <b>Después:</b> reparar en taller especializado, sustituir cables y clavijas dañados y guardarla limpia, seca y desconectada. <b>No reparar con cinta aislante.</b></li></ul>
+</div></details>
+
+<details class="topic"><summary>7. Máquinas y electricidad</summary><div class="inside">
+<p><b>Máquinas (RD 1215/1997 y RD 1644/2008):</b> riesgo mecánico (elementos móviles, transmisión, proyección de partículas), eléctrico (quemaduras y muerte por fibrilación) y otros (térmicos, ruido, vibraciones). <i>ASIX: ventiladores y fuentes de un servidor.</i></p>
+<p>La electricidad es útil pero invisible: no se percibe con ningún sentido y el desconocimiento la hace peligrosa.</p>
+<div class="grid"><div class="mini"><b>Contacto directo</b><br>Con un elemento activo de la instalación.</div><div class="mini"><b>Contacto indirecto</b><br>Con una masa que ha cogido tensión por accidente.</div><div class="mini"><b>Electricidad estática</b><br>Carga acumulada por rozamiento.</div></div>
+<h3>Causas de accidentes eléctricos (REBT, RD 842/2002)</h3>
+<ul><li>Enchufes sin toma de tierra, ladrones y tirar del cable.</li><li>Manipular sin ser personal cualificado o anular protecciones.</li><li>Cables deteriorados, cuadros abiertos o sin señalizar, limpieza con medios húmedos.</li><li>Sin diferenciales ni mantenimiento reglamentario. <i>SMX: regleta saturada. ASIX: SAI y PDU sobrecargados.</i></li></ul>
+<p><b>Efectos:</b> físicos y químicos (quemaduras, electrólisis de la sangre); biológicos (contracción y tetanización muscular, asfixia, parada respiratoria, fibrilación ventricular); indirectos (caídas, golpes, proyecciones). Arco eléctrico: hasta 20.000 °C.</p>
+<h3>Normas básicas y 5 reglas de oro</h3>
+<p>No manipular sin formación ni autorización (RD 614/2001); tirar de la clavija, no del cable; revisar protecciones, no sobrecargar enchufes y reparar de inmediato los defectos de aislamiento.</p>
+<ol><li><b>Cortar</b> todas las fuentes de tensión.</li><li><b>Bloquear</b> los aparatos de corte.</li><li><b>Verificar</b> la ausencia de tensión.</li><li><b>Poner a tierra</b> y en cortocircuito.</li><li><b>Delimitar</b> y señalizar la zona.</li></ol>
+</div></details>
+
+<details class="topic"><summary>8. Incendios</summary><div class="inside">
+<p><b>Triángulo del fuego:</b> calor, combustible y oxígeno. El <b>tetraedro</b> añade la <b>reacción en cadena</b>.</p>
+<p><b>Focos de ignición:</b> eléctricos (cortocircuitos, arcos, electricidad estática), mecánicos (chispas, fricción), térmicos (llamas, superficies calientes) y químicos (reacciones exotérmicas).</p>
+<table><tr><th>Clase</th><th>Material</th></tr><tr><td>A</td><td>Sólidos: papel, madera</td></tr><tr><td>B</td><td>Líquidos inflamables</td></tr><tr><td>C</td><td>Gases</td></tr><tr><td>D</td><td>Metales</td></tr></table>
+<p><b>Polvo ABC</b> para uso general; <b>CO₂</b> para equipos eléctricos. SMX/ASIX: extintor de CO₂ en el aula y el CPD, no de agua. Normas: RD 513/2017 (RIPCI, sustituye al RD 1942/1993) y CTE DB-SI.</p>
+<h3>Qué hacer ante un incendio</h3>
+<ol><li>Avisar a las personas; alarma.</li><li>Valorar la intensidad y el peligro; si ha pasado la fase incipiente, evacuar según el plan.</li><li>Determinar la clase de fuego y elegir el extintor adecuado.</li><li>Comprobar el manómetro, quitar el pasador y apuntar a la base del fuego con el viento a la espalda.</li><li>Asegurar la extinción y avisar a quien recarga el extintor.</li></ol>
+<p><b>Prevención:</b> identificar focos, diseñar bien el local, almacenar con seguridad materiales peligrosos, orden y limpieza, formación, plan de emergencia, revisiones periódicas, mantas ignífugas, detectores de humo, extintores y señales (RD 485/1997). ASIX: detección y extinción por gas en salas de servidores.</p>
+</div></details>
+
+<details class="topic"><summary>9. Manipulación de cargas y ambiente de trabajo</summary><div class="inside">
+<p><b>RD 487/1997:</b> a partir de <b>3 kg</b> ya puede haber riesgo.</p>
+<table><tr><th>Peso</th><th>Máximo indicativo</th></tr><tr><td>25 kg</td><td>En general</td></tr><tr><td>15 kg</td><td>Mujeres, mayores y jóvenes</td></tr><tr><td>40 kg</td><td>Trabajadores entrenados, en situaciones esporádicas</td></tr></table>
+<p>Riesgos: lesiones dorsolumbares, fatiga, vuelcos y atropellos. <b>Los medios mecánicos van primero</b> (carretilla y ayuda de un compañero para un servidor, SAI o impresora).</p>
+<p><b>Técnica:</b> planificar (peso, forma, medida, ayuda); levantar con pies abiertos, rodillas flexionadas, espalda recta y carga pegada al cuerpo; mover girando con todo el cuerpo y empujando mejor que arrastrando. Evita lumbalgia, ciática y hernia discal. EPI: calzado de seguridad, casco y guantes según la tarea.</p>
+<h3>Agentes del ambiente de trabajo</h3>
+<ul><li><b>Químicos:</b> polvos, humos y vapores; vías respiratoria, dérmica, digestiva y parenteral; pesan la dosis y el tiempo de exposición.</li><li><b>Físicos:</b> temperatura, radiación, ruido y vibración. Oficinas: 17–27 °C; ruido nocivo a partir de 80 dB; radiaciones ionizantes y no ionizantes.</li><li><b>Biológicos:</b> hongos, bacterias y virus, en grupos 1 a 4.</li><li><b>Ergonómicos y psicosociales:</b> posturas y organización. SMX: pantallas, postura e iluminación. ASIX: ruido y frío en el CPD.</li></ul>
+</div></details>
+
+<details class="topic"><summary>10. Planes de emergencia y evacuación</summary><div class="inside">
+<p><b>Para qué:</b> proteger personas y bienes ante incendios, fugas o fallos graves. La LPRL obliga a la empresa a tomar medidas de emergencia. Marco: Norma Básica de Autoprotección (con su modificación), decreto de Cataluña con el catálogo de actividades obligadas a la autoprotección, RD de lugares de trabajo y RD de instalaciones contra incendios.</p>
+<ul><li><b>Primer objetivo:</b> conocer la empresa (continente y contenido; peligrosidad y medios de protección de cada área).</li><li><b>Fiabilidad de los medios:</b> revisiones periódicas de extintores, BIE, detectores y alumbrado de emergencia; instalaciones en buen estado.</li><li><b>Evitar causas:</b> orden, limpieza y mantenimiento preventivo. Riesgos: sobrecargas, baterías de litio y cableado deteriorado.</li><li><b>Personas organizadas y formadas:</b> equipos de intervención y evacuación con funciones claras, formación y adiestramiento, e información a los usuarios.</li></ul>
+<p><b>Elaboración del plan:</b> identificación de riesgos → documento del plan → normas de actuación para todos → implantación (formación y revisión periódica).</p>
+<table><tr><th>Emergencia</th><th>Descripción</th></tr><tr><td>Conato</td><td>Se neutraliza con los medios del lugar. <i>SMX: un ordenador arde en el aula y se apaga con CO₂.</i></td></tr><tr><td>Parcial</td><td>Necesita el equipo de intervención. <i>ASIX: fuego en un armario de comunicaciones.</i></td></tr><tr><td>Total</td><td>Todos los equipos, ayuda externa y evacuación general. <i>Incendio en el CPD con humo en el centro.</i></td></tr></table>
+<h3>Normas de actuación</h3>
+<ul><li>Mantén la calma, elige el recorrido más corto hacia el exterior y evita zonas con más riesgo de incendio.</li><li><b>Ventanas y ascensores no son vías de evacuación. No uses el ascensor.</b></li><li>No te detengas en salidas y pasos; desconecta los aparatos que usas; cúbrete nariz y boca con un paño húmedo; con humo, sal agachado o arrastrándote.</li><li><b>Punto de reunión:</b> fuera de zonas con tránsito, sin obstaculizar a emergencias y reflejado en los planos. Los patios interiores no cuentan.</li><li>Planos «Usted está aquí» con sectores y rutas; flechas de dirección; señalización fotoluminiscente.</li><li><b>Simulacros:</b> alarma y evacuación periódicas; automatizan la conducta, reducen el pánico y optimizan el tiempo. Simulacro anual de autoprotección.</li></ul>
+<p><b>Entorno TIC:</b> ASIX protege datos y continuidad (copias de seguridad y plan de recuperación); SMX desconecta equipos solo si es seguro y no retrasa. <b>La persona va primero: no se vuelve a salvar equipos ni datos.</b></p>
+</div></details>
+
+<details class="topic"><summary>11. Vigilancia de la salud</summary><div class="inside">
+<p>El empresario garantiza la vigilancia periódica según los riesgos del puesto (art. 22 LPRL). Es <b>voluntaria</b> (con consentimiento), pero <b>obligatoria</b> si el estado del trabajador puede suponer un peligro para él o para terceros.</p>
+<p><b>Garantías:</b> proporcionalidad (pruebas proporcionales al riesgo y con las mínimas molestias), respeto a la intimidad y dignidad, y confidencialidad (también bajo el RGPD y la LOPDGDD).</p>
+<p><b>Objetivos individuales:</b> detección precoz de alteraciones e identificación de trabajadores especialmente sensibles. <b>Colectivos:</b> valorar el estado de salud, alertar de riesgos y evaluar la eficacia del plan de prevención. <i>SMX/ASIX: fatiga visual, riesgos ergonómicos y estrés en turnos de guardia.</i></p>
+</div></details>
+
+<details class="topic"><summary>12. Primeros auxilios: conceptos y actuación (PAS)</summary><div class="inside">
+<p><b>Primeros auxilios:</b> técnicas y actuaciones de atención inmediata a un accidentado hasta que llega la asistencia sanitaria. Objetivo: evitar que las lesiones empeoren. La Ley 31/1995 obliga a organizar medidas de emergencia y primeros auxilios.</p>
+<h3>Consejos generales de socorrismo</h3>
+<ul><li>Conservar la calma, evitar aglomeraciones y saber imponerse (organizar la evacuación).</li><li><b>No mover a nadie sin seguridad total.</b></li><li>Examinar al herido con una valoración primaria del riesgo vital; tranquilizarlo y mantenerlo abrigado; avisar rápido al personal sanitario.</li><li>No evacuar en coche particular ni medicar: la medicación corresponde al médico.</li></ul>
+<h3>PAS: Proteger, Avisar, Socorrer</h3>
+<ul><li><b>Proteger:</b> asegurar que herido y socorrista están fuera de peligro.</li><li><b>Avisar:</b> <b>112</b> (en Cataluña también 061 para salud). Informar de qué ha pasado y dónde, cuántas víctimas hay y en qué estado.</li><li><b>Socorrer:</b> consciencia, respiración y pulso (este por personal entrenado). Si no responde y no respira con normalidad, iniciar RCP; no retrasarla buscando el pulso.</li></ul>
+<p><b>Formación:</b> básica (pérdida de conocimiento, parada cardiorrespiratoria, obstrucción de vías, hemorragias), complementaria (quemaduras leves, fracturas y luxaciones) y específica (según los riesgos de la empresa: sala de servidores o CPD).</p>
+</div></details>
+
+<details class="topic"><summary>13. Reanimación: respiración artificial, RCP y DEA</summary><div class="inside">
+<p>El cerebro coordina todo el organismo y necesita oxígeno (pulmones → corazón y sangre → cerebro). Sin respiración o circulación, las neuronas aguantan unos <b>4 minutos</b> sin lesión; los 4 siguientes llega la muerte cerebral total; esos <b>8 minutos</b> son la muerte clínica.</p>
+<p><b>Respiración artificial</b> (ahogamiento, electrocución, inhalación de gas): abrir la vía aérea con el herido boca arriba y la barbilla elevada; retirar obstáculos visibles (sin meter los dedos a ciegas); si no responde ni respira con normalidad, combinar con RCP. Continuar hasta la recuperación o la llegada de sanitarios, mientras sea seguro.</p>
+<div class="grid"><div class="mini"><b>100–120</b><br>compresiones por minuto</div><div class="mini"><b>5–6 cm</b><br>de profundidad, en el centro del tórax</div><div class="mini"><b>30 : 2</b><br>30 compresiones por 2 insuflaciones</div></div>
+<p>Con dos socorristas, uno comprime y el otro insufla (parámetros adultos, ERC 2021).</p>
+<p><b>DEA (desfibrilador):</b> analiza el ritmo del corazón e indica si hace falta una descarga; puede salvar vidas en una parada. En Cataluña, el Decreto 151/2012 regula su uso fuera del ámbito sanitario. Combinar DEA y RCP hasta que llegue la ambulancia.</p>
+</div></details>
+
+<details class="topic"><summary>14. Lesiones concretas: qué hacer</summary><div class="inside">
+<ul><li><b>Fracturas y luxaciones:</b> no mover al accidentado (lesiones internas graves); inmovilizar el miembro antes del traslado. Fractura abierta: limpiar, cubrir con apósito estéril e inmovilizar.</li><li><b>Accidente ocular:</b> no frotar el ojo; ante una salpicadura, lavar con mucha agua. Partícula superficial: enjuagar, sin manipular el ojo. Si es punzante, caliente o sangra: no manipular, hospital. <i>ASIX: limpieza de fibra óptica y láser de un equipo de red.</i></li><li><b>Electrocución en entorno TIC:</b> primero <b>cortar la corriente</b> (mejor con el interruptor general) para que el socorrista no resulte afectado. Después valorar consciencia y respiración: sin respuesta ni respiración normal, RCP; inconsciente que respira normalmente: posición lateral de seguridad si no hay sospecha de traumatismo.</li><li><b>Quemaduras</b> (1.º, 2.º o 3.º grado): fuego o líquidos calientes, refrescar con agua corriente fresca durante <b>20 minutos</b>, sin arrancar ropa adherida. Corrosivos: retirar la ropa contaminada con seguridad y lavar abundantemente, sin frotar; cubrir con gasa estéril. Quemadura extensa, profunda, eléctrica o química: valoración sanitaria urgente.</li><li><b>Herida leve:</b> agua y jabón, secar con gasas, comprimir y proteger. Evitar agua oxigenada, alcohol y mercromina; antiséptico suave como clorhexidina.</li><li><b>Hemorragia externa:</b> presión directa firme y continua con gasas; si es grave, avisar al 112. Torniquete solo en hemorragia de extremidad potencialmente mortal, con formación o indicaciones del 112.</li><li><b>Hemorragia interna:</b> hematoma o sangre por oído, boca o nariz; frío, piel húmeda, palidez y pulso débil. Traslado urgente: activar el 112.</li><li><b>Obstrucción de vías:</b> parcial, dejar toser; total y consciente, cinco golpes en la espalda y cinco compresiones abdominales (Heimlich); inconsciente: RCP. Si estás solo, apoya el abdomen en el respaldo de una silla.</li></ul>
+</div></details>
+
+<div class="panel"><h2>Errores típicos que debes evitar</h2>
+<ul><li>Confundir accidente (súbito) con enfermedad profesional (lenta y catalogada).</li><li>Usar un extintor de agua en equipos eléctricos: va CO₂.</li><li>Usar el ascensor o las ventanas para evacuar, o volver a salvar equipos.</li><li>Mover a un accidentado sin seguridad, medicarlo o evacuarlo en coche particular.</li><li>Perder tiempo buscando el pulso antes de iniciar la RCP.</li><li>Arrancar la ropa pegada en una quemadura, o aplicar alcohol, agua oxigenada o mercromina en heridas.</li><li>Reparar herramientas con cinta aislante o usarlas como palanca o martillo.</li><li>Creer que la vigilancia de la salud es siempre obligatoria: es voluntaria salvo peligro para el trabajador o terceros.</li></ul></div></template>
+<template id="key-ipo"><div class="panel"><h2>Repaso rápido: lo imprescindible</h2>
+<table><tr><th>Concepto</th><th>Qué debes recordar</th></tr>
+<tr><td>Riesgo laboral</td><td>Posibilidad de sufrir un daño derivado del trabajo.</td></tr>
+<tr><td>Riesgo grave e inminente</td><td>Futuro inmediato y daño grave; se puede abandonar el puesto.</td></tr>
+<tr><td>Accidente de trabajo</td><td>Lesión con ocasión o a consecuencia del trabajo por cuenta ajena.</td></tr>
+<tr><td>In itinere</td><td>Ir al trabajo o volver a casa, sin imprudencia temeraria.</td></tr>
+<tr><td>Enfermedad profesional</td><td>Lenta; incluida en el cuadro oficial (RD 1299/2006).</td></tr>
+<tr><td>Accidente blanco</td><td>Solo daños materiales.</td></tr>
+<tr><td>Ley 31/1995</td><td>Ley de Prevención de Riesgos Laborales.</td></tr>
+<tr><td>Protección</td><td>Colectiva antes que individual.</td></tr>
+<tr><td>5 reglas de oro</td><td>Cortar, bloquear, verificar, poner a tierra, delimitar.</td></tr>
+<tr><td>Extintores</td><td>Polvo ABC general; CO₂ para equipos eléctricos.</td></tr>
+<tr><td>Cargas</td><td>Desde 3 kg hay riesgo; 25 kg máximo general.</td></tr>
+<tr><td>Conato / parcial / total</td><td>Medios del lugar / equipo de intervención / evacuación y ayuda externa.</td></tr>
+<tr><td>Evacuación</td><td>Sin ascensor ni ventanas; punto de reunión exterior.</td></tr>
+<tr><td>Vigilancia de la salud</td><td>Voluntaria, confidencial y proporcional.</td></tr>
+<tr><td>PAS</td><td>Proteger, Avisar (112), Socorrer.</td></tr>
+<tr><td>RCP</td><td>100–120 compresiones/min, 5–6 cm, relación 30:2.</td></tr>
+<tr><td>Cerebro sin oxígeno</td><td>~4 min sin lesión; 8 min de muerte clínica.</td></tr>
+<tr><td>Quemadura térmica</td><td>Agua corriente fresca 20 minutos.</td></tr></table>
+<p><b>Consejo:</b> si sabes explicar cada fila con un ejemplo de SMX o ASIX, llevas una buena base para el examen.</p></div></template>
+<template id="notes-ing">
+<div class="panel"><h2>Cómo estudiar este resumen</h2><p>Aprende la estructura de cada apartado y fíjate en los ejemplos en inglés. Después practica con el test: además de preguntas con respuesta correcta hay <b>preguntas de opinión</b> donde eliges tu propia respuesta y no cuentan como error.</p><span class="tag">English</span><span class="tag">SMX · A2</span><span class="tag">Grammar + Vocabulary</span></div>
+
+<details class="topic" open><summary>1. To be</summary><div class="inside">
+<p>Se usa para <b>describir</b> personas y cosas y para dar <b>información</b>: nombre, profesión, origen y edad.</p>
+<table><tr><th></th><th>Forma</th></tr>
+<tr><td>✅ Affirmative</td><td>I am (I'm) · You are (You're) · He/She/It is (He's, She's, It's) · We/You/They are (We're, You're, They're)</td></tr>
+<tr><td>❌ Negative</td><td>I'm not · You aren't · He/She/It isn't · We/You/They aren't</td></tr>
+<tr><td>❓ Question</td><td>Am I…? · Is he/she/it…? · Are you/we/they…?</td></tr>
+<tr><td>Short answers</td><td>Yes, I am. / No, I'm not. · Yes, he is. / No, he isn't.</td></tr></table>
+<div class="grid"><div class="mini"><b>Descriptions</b><br>I <b>am</b> a helpdesk technician.<br>She <b>is</b> a network administrator.<br>This laptop <b>is</b> very old.</div><div class="mini"><b>Information</b><br>We <b>are</b> new students.<br>They <b>are</b> from Rubí.</div></div>
+<p>⚠️ <b>They</b> = personas <b>y</b> cosas: <i>Anna and John → they are…</i> · <i>Laptops and tablets → they are…</i></p>
+<p>Las <b>contracciones</b> (I'm, you're, he's) se usan en inglés informal y hablado.</p>
+</div></details>
+
+<details class="topic"><summary>2. Have got</summary><div class="inside">
+<p>Se usa para hablar de <b>posesión</b> (lo que tienes) y de <b>características</b>.</p>
+<table><tr><th></th><th>Forma</th></tr>
+<tr><td>✅ Affirmative</td><td>I/You have got (I've got) · He/She/It has got (He's got) · We/You/They have got (We've got)</td></tr>
+<tr><td>❌ Negative</td><td>I haven't got · He hasn't got · We haven't got</td></tr>
+<tr><td>❓ Question</td><td>Have I got…? · Has he got…? · Have we got…?</td></tr>
+<tr><td>Short answers</td><td>Yes, I have. / No, I haven't. · Yes, he has. / No, he hasn't.</td></tr></table>
+<p><i>I've got a laptop. · She hasn't got a smartphone. · The classroom has got new computers. · Have you got the new timetable?</i></p>
+<p>⚠️ <b>is vs has got:</b> <i>Sonia <b>is</b> British</i> → descripción → <b>to be</b>. <i>Sonia <b>has got</b> a British passport</i> → posesión → <b>have got</b>.</p>
+<p><b>He's got = He has got.</b> La contracción <b>'s</b> puede ser <i>is</i> o <i>has</i>: el contexto indica cuál.</p>
+</div></details>
+
+<details class="topic"><summary>3. Present simple</summary><div class="inside">
+<p>Se usa para <b>hábitos, rutinas y hechos generales</b>: cosas que siempre son verdad o pasan con regularidad.</p>
+<table><tr><th></th><th>Forma</th></tr>
+<tr><td>✅ Affirmative</td><td>I/You/We/They learn · He/She/It learn<b>s</b></td></tr>
+<tr><td>❌ Negative</td><td>I/You/We/They don't learn · He/She/It doesn't learn</td></tr>
+<tr><td>❓ Question</td><td>Do you learn…? · Does he learn…?</td></tr>
+<tr><td>Short answers</td><td>Yes, I do. / No, she doesn't.</td></tr></table>
+<h3>Ortografía de he / she / it</h3>
+<ul><li><b>+ s:</b> learn → learns</li><li><b>+ es:</b> watch → watches · go → goes</li><li><b>consonante + y → ies:</b> try → tries</li></ul>
+<p>⚠️ Error más frecuente: olvidar la <b>-s</b> de la tercera persona.</p>
+<h3>Expresiones de tiempo</h3>
+<p>every morning / every day · once / twice a month or a year · on Mondays</p>
+<h3>Adverbios de frecuencia</h3>
+<p>Van <b>entre el sujeto y el verbo</b>: <i>I always start my workday at 9.00. · She never uses that app. · We usually meet once a week.</i></p>
+<p><b>always → usually → often → sometimes → rarely → never</b></p>
+</div></details>
+
+<details class="topic"><summary>4. ¿Cuál necesito? (resumen)</summary><div class="inside">
+<table><tr><th>Estructura</th><th>Uso</th><th>Ejemplo</th></tr>
+<tr><td>To be</td><td>Quién o qué es alguien/algo</td><td>I am a student. She is Spanish.</td></tr>
+<tr><td>Have got</td><td>Qué tiene o posee alguien</td><td>I've got a laptop. He hasn't got a printer.</td></tr>
+<tr><td>Present simple</td><td>Hábitos, rutinas y hechos generales</td><td>I check my email every morning.</td></tr></table>
+</div></details>
+
+<details class="topic"><summary>5. Comparatives and superlatives</summary><div class="inside">
+<table><tr><th>Tipo de adjetivo</th><th>Comparative</th><th>Superlative</th></tr>
+<tr><td>1 sílaba: fast</td><td>fast<b>er</b> than</td><td>the fast<b>est</b></td></tr>
+<tr><td>acaba en -e: large</td><td>large<b>r</b> than</td><td>the large<b>st</b></td></tr>
+<tr><td>consonante + vocal + consonante: big</td><td>big<b>ger</b> than</td><td>the big<b>gest</b></td></tr>
+<tr><td>acaba en -y: happy</td><td>happ<b>ier</b> than</td><td>the happ<b>iest</b></td></tr>
+<tr><td>2+ sílabas: beautiful</td><td><b>more</b> beautiful than</td><td>the <b>most</b> beautiful</td></tr>
+<tr><td>Irregulares</td><td>good → better · bad → worse · far → farther/further · little → less · much/many → more</td><td>best · worst · farthest/furthest · least · most</td></tr></table>
+<p>Nunca «more cheaper»: <i>cheap → cheaper</i>. Comparing servers: <i>Server B has <b>more</b> memory than Server A; Server C has the <b>most</b>; Server A has the <b>least</b>.</i></p>
+</div></details>
+
+<details class="topic"><summary>6. Determiners: countable / uncountable</summary><div class="inside">
+<table><tr><th>Countable</th><th>Uncountable</th><th>Ambos</th></tr><tr><td>many, few, a few, three…</td><td>much, little, a little</td><td>some, a lot of, my/your/his…, the</td></tr></table>
+<ul><li><b>a / an</b> (an delante de sonido vocal: <i>an idea</i>) para algo no específico; <b>the</b> para algo específico.</li><li><b>Countable:</b> apple, book, computer, opportunity, idea. <b>Uncountable:</b> water, information, advice, time, respect, software, money.</li><li><i>How <b>much</b> money? · How <b>many</b> students? · very <b>little</b> milk · <b>few</b> friends</i> (= not many).</li></ul>
+</div></details>
+
+<details class="topic"><summary>7. Vocabulary: expressions and phrasal verbs</summary><div class="inside">
+<div class="grid">
+<div class="mini"><b>Two peas in a pod</b><br>Dos cosas o personas muy parecidas que encajan bien. <i>Developers and designers are two peas in a pod.</i></div>
+<div class="mini"><b>Figure out</b><br>Entender o resolver algo tras pensarlo. <i>I need to figure out why the server is not responding.</i></div>
+<div class="mini"><b>Come to life</b><br>Volverse activo o emocionante; empezar a funcionar. <i>When the designer added animations, the game came to life.</i></div>
+<div class="mini"><b>Find out</b><br>Aprender información sobre algo o alguien. <i>Please find out what time the train leaves.</i></div></div>
+<p><b>find out</b> = conseguir un dato · <b>figure out</b> = entender / resolver / calcular.</p>
+<ul><li><b>bumpy:</b> no plano; difícil o incómodo. · <b>layout:</b> cómo están organizadas las partes de algo.</li><li><b>hitch:</b> problema u obstáculo que debes resolver para continuar. · <b>smoothly:</b> cuando algo va bien, sin problemas.</li></ul>
+</div></details>
+
+<details class="topic"><summary>8. Reading notes: tech topics</summary><div class="inside">
+<h3>Software development</h3>
+<p>Proceso de <b>diseñar, programar, probar y mantener</b> programas. Fases: 1) planning (requirements: features, usuarios, problemas que resuelve), 2) design and coding (Python, Java, JavaScript), 3) testing (testers buscan <b>bugs</b>: errores que hacen fallar el programa), 4) release (it comes to life) y después updates según el feedback de los usuarios.</p>
+<h3>Game design</h3>
+<p>Proceso creativo y técnico con artistas, programadores y diseñadores de sonido. Primero se define el <b>concept</b> (tipo de juego, público, historia) y se crea el <b>Game Design Document</b>: plan detallado de personajes, niveles, mecánicas y gráficos. Se programa con <b>game engines</b> (Unity, Unreal Engine), que gestionan física, movimiento y gráficos. El final es el <b>QA (Quality Assurance)</b>: pruebas para corregir bugs antes de vender el juego.</p>
+<p><b>Five tips for game designers (in order):</b> plan the game well → work closely with the programmers → test the game a lot → learn from the players' feedback → keep learning new things.</p>
+<h3>UI design (User Interface)</h3>
+<p>Es como la entrada de una tienda: lo primero que ve la gente. No va solo de que se vea bonito, sino de que sea <b>fácil de usar</b>. El diseñador elige colores y coloca botones e iconos para guiar al usuario. Un diseño confuso puede <i>make or break</i> la experiencia.</p>
+<h3>Project management: five stages</h3>
+<p><b>1.</b> Identify the customers → <b>2.</b> Analyse the information → <b>3.</b> Make a plan → <b>4.</b> Do the work → <b>5.</b> Evaluate the results</p>
+<h3>Machine learning</h3>
+<p>Ayuda a los ordenadores a <b>learn</b> de los <b>data</b> para hacer <b>predictions</b>. Se <b>gather</b> muchos datos, se <b>feed</b> al programa y este aprende <b>patterns</b>. Cuanta más práctica, mejor. No siempre acierta. Se usa en el tiempo, películas, medicina o compras online, no solo para reconocer gatos.</p>
+<h3>Who does what?</h3>
+<p><b>Game designer:</b> crea la historia y las ideas. <b>Software developer:</b> escribe código. <b>UI designer:</b> colores, botones e iconos. <b>Project data:</b> indica a los desarrolladores qué crear.</p>
+</div></details>
+</template>
+<template id="key-ing"><div class="panel"><h2>Repaso rápido: lo imprescindible</h2>
+<table><tr><th>Concepto</th><th>Qué debes recordar</th></tr>
+<tr><td>To be</td><td>am / is / are: describir e informar (profesión, origen, edad).</td></tr>
+<tr><td>Have got</td><td>have / has got: posesión. He's got = He has got.</td></tr>
+<tr><td>Present simple</td><td>Hábitos y hechos. he/she/it + s (watches, goes, tries).</td></tr>
+<tr><td>Negativa / pregunta</td><td>don't / doesn't + verbo base; Do / Does + sujeto + verbo base.</td></tr>
+<tr><td>Adverbios</td><td>Entre sujeto y verbo: always, usually, often, sometimes, rarely, never.</td></tr>
+<tr><td>Comparativo</td><td>fast → faster · happy → happier · beautiful → more beautiful.</td></tr>
+<tr><td>Superlativo</td><td>the fastest · the happiest · the most beautiful.</td></tr>
+<tr><td>Irregulares</td><td>good → better → best · bad → worse → worst.</td></tr>
+<tr><td>much / many</td><td>much + incontable (time); many + contable (students).</td></tr>
+<tr><td>few / little</td><td>few + contable; little + incontable.</td></tr>
+<tr><td>find out / figure out</td><td>Conseguir información / entender o resolver.</td></tr>
+<tr><td>Two peas in a pod</td><td>Muy parecidos.</td></tr>
+<tr><td>Come to life</td><td>Cobrar vida / empezar a funcionar.</td></tr>
+<tr><td>QA</td><td>Quality Assurance: pruebas finales para corregir bugs.</td></tr></table>
+<p><b>Consejo:</b> inventa una frase tuya para cada fila.</p></div></template>
+<template id="notes-mon"><div class="panel"><h2>Cómo estudiar este resumen</h2><p>Abre cada apartado y aprende primero la idea principal. Después intenta explicar el concepto con tus propias palabras y termina haciendo el test sin mirar los apuntes.</p><span class="tag">Nivel: 1.º SMX</span><span class="tag">RA01</span><span class="tag">Resumen</span></div>
+
+<details class="topic" open><summary>1. El sistema informático</summary><div class="inside">
+<p>Un <b>sistema informático</b> combina hardware, software y usuarios para recibir, procesar, guardar y comunicar información.</p>
+<div class="grid"><div class="mini"><b>Entrada</b><br>Introduce datos: teclado, ratón, escáner.</div><div class="mini"><b>Proceso</b><br>La CPU trabaja con los datos.</div><div class="mini"><b>Salida</b><br>Muestra resultados: monitor, impresora.</div><div class="mini"><b>Almacenamiento</b><br>Conserva datos: SSD o HDD.</div></div>
+<p>La arquitectura <b>von Neumann</b> guarda instrucciones y datos en la misma memoria. La CPU repite el ciclo: <b>buscar → decodificar → ejecutar → guardar</b>.</p>
+<p><b>Bit:</b> unidad mínima (0 o 1). <b>Byte:</b> 8 bits. El software puede ser de sistema (sistema operativo y controladores), de aplicación (navegador) o de utilidad (copias de seguridad).</p>
+</div></details>
+
+<details class="topic"><summary>2. El procesador (CPU)</summary><div class="inside">
+<p>La CPU ejecuta instrucciones. Sus partes principales son la <b>unidad de control</b> (coordina), la <b>ALU</b> (operaciones aritméticas y lógicas), los <b>registros</b> y la <b>memoria caché</b>.</p>
+<ul><li><b>Núcleos:</b> unidades de procesamiento. Más núcleos ayudan si el programa los aprovecha.</li><li><b>Hilos:</b> tareas que puede gestionar el procesador; tecnologías como SMT permiten varios hilos por núcleo.</li><li><b>Frecuencia (GHz):</b> ciclos por segundo. No sirve para comparar directamente procesadores de arquitecturas distintas.</li><li><b>Caché L1/L2/L3:</b> memoria muy rápida que reduce esperas de la RAM.</li><li><b>TDP:</b> referencia de la potencia térmica que debe disiparse; no siempre equivale al consumo máximo.</li><li><b>Zócalo (socket):</b> conexión física con la placa base. Debe ser compatible.</li><li><b>iGPU:</b> gráfica integrada en el procesador, si el modelo la incluye.</li></ul>
+<p><b>32 bits</b> limita normalmente la RAM direccionable a unos 4 GB; <b>64 bits</b> permite gestionar mucha más memoria. Un benchmark mide el rendimiento: monohilo (un núcleo) o multihilo (varios).</p>
+</div></details>
+
+<details class="topic"><summary>3. Refrigeración y temperatura</summary><div class="inside">
+<p>Los componentes generan calor. Si la CPU alcanza temperaturas demasiado altas puede reducir automáticamente su velocidad: esto se llama <b>throttling térmico</b>.</p>
+<ul><li><b>Disipador:</b> absorbe y reparte el calor.</li><li><b>Ventilador:</b> mueve el aire para evacuar el calor.</li><li><b>Pasta térmica:</b> mejora el contacto entre CPU y disipador rellenando pequeñas irregularidades.</li><li><b>Refrigeración líquida AIO:</b> usa bloque, bomba, tubos y radiador.</li></ul>
+<p>El flujo de aire de la caja debe facilitar la entrada de aire fresco y la salida del aire caliente.</p>
+</div></details>
+
+<details class="topic"><summary>4. La placa base</summary><div class="inside">
+<p>La <b>placa base</b> conecta y permite la comunicación entre los componentes.</p>
+<ul><li><b>Formatos:</b> ATX, microATX y Mini-ITX. Determinan tamaño y compatibilidad con la caja.</li><li><b>Chipset:</b> gestiona distintas comunicaciones y funciones de la placa.</li><li><b>Socket:</b> debe coincidir con el procesador.</li><li><b>VRM:</b> regula y suministra energía estable a CPU y otros componentes.</li><li><b>Ranuras DIMM:</b> alojan la memoria RAM.</li><li><b>Pila CMOS:</b> ayuda a conservar la configuración del reloj y firmware.</li></ul>
+<p>Antes de comprar, comprueba socket, tipo de RAM, tamaño, conexiones y compatibilidad de CPU.</p>
+</div></details>
+
+<details class="topic"><summary>5. BIOS y UEFI</summary><div class="inside">
+<p>El <b>firmware</b> inicia y configura el hardware antes de cargar el sistema operativo. La BIOS es el sistema tradicional y UEFI es su evolución moderna.</p>
+<ul><li><b>POST:</b> comprobación inicial del hardware.</li><li><b>Orden de arranque:</b> decide desde qué unidad iniciar.</li><li><b>Secure Boot:</b> ayuda a impedir el arranque de software no autorizado.</li><li><b>TPM 2.0:</b> módulo o función de seguridad que almacena claves y permite funciones de confianza.</li><li><b>XMP / EXPO:</b> perfiles para configurar la RAM a velocidades anunciadas.</li><li><b>Clear CMOS:</b> restablece la configuración del firmware.</li></ul>
+</div></details>
+
+<details class="topic"><summary>6. Buses y ranuras de expansión</summary><div class="inside">
+<p>Un <b>bus</b> es una vía de comunicación por la que circulan datos, direcciones o señales de control.</p>
+<p><b>PCI Express (PCIe)</b> conecta tarjetas gráficas, tarjetas de red y otros dispositivos. Sus líneas se indican como x1, x4, x8 o x16. Cuantas más líneas y mayor generación, más ancho de banda potencial.</p>
+<p>La longitud física de una ranura no siempre indica cuántas líneas eléctricas tiene. PCI, AGP e ISA son buses antiguos que puedes encontrar en equipos históricos.</p>
+</div></details>
+
+<details class="topic"><summary>7. Conectores internos y externos</summary><div class="inside">
+<div class="grid">
+<div class="mini"><b>Internos</b><ul><li>ATX 24 pines: alimentación placa.</li><li>EPS 4+4: alimentación CPU.</li><li>SATA: discos SATA.</li><li>M.2: SSD u otros módulos compatibles.</li><li>USB frontal, audio frontal y panel frontal.</li><li>Conectores de ventiladores y RGB/ARGB.</li></ul></div>
+<div class="mini"><b>Externos</b><ul><li>USB-A / USB-C: periféricos y datos.</li><li>HDMI / DisplayPort: vídeo y audio.</li><li>RJ45: red Ethernet.</li><li>Jack 3,5 mm: audio.</li><li>PS/2: teclado o ratón antiguos.</li></ul></div></div>
+<p><b>Importante:</b> M.2 es un formato de conexión; una unidad M.2 puede usar SATA o PCIe/NVMe. No todos los M.2 funcionan con el mismo protocolo.</p>
+</div></details>
+
+<details class="topic"><summary>8. El chasis o caja</summary><div class="inside">
+<p>La caja protege y organiza los componentes. Hay que comprobar que admite el formato de placa base y que tiene espacio para la tarjeta gráfica, el disipador y las unidades.</p>
+<p>También importan el flujo de aire, la gestión de cables, los huecos de expansión y los conectores frontales.</p>
+</div></details>
+
+<details class="topic"><summary>9. Memoria RAM</summary><div class="inside">
+<p>La <b>RAM</b> guarda temporalmente los datos y programas que se están usando. Es <b>volátil</b>: pierde su contenido al apagar el equipo.</p>
+<ul><li><b>DDR4 y DDR5:</b> generaciones diferentes; no son intercambiables.</li><li><b>DIMM:</b> formato habitual de sobremesa. <b>SO-DIMM:</b> habitual en portátiles.</li><li><b>Capacidad:</b> se mide en GB. <b>Frecuencia/velocidad:</b> influye en el rendimiento.</li><li><b>Dual channel:</b> utiliza dos canales de memoria para aumentar el ancho de banda.</li><li><b>ECC:</b> detecta y corrige ciertos errores de memoria.</li><li><b>Memoria virtual:</b> usa almacenamiento como apoyo cuando falta RAM; es más lenta.</li></ul>
+</div></details>
+
+<details class="topic"><summary>10. Almacenamiento: HDD y SSD</summary><div class="inside">
+<div class="grid"><div class="mini"><b>HDD</b><p>Disco mecánico con platos giratorios. Suele ofrecer mucha capacidad a menor precio, pero es más lento y sensible a golpes.</p></div><div class="mini"><b>SSD</b><p>Almacenamiento electrónico sin piezas móviles. Es mucho más rápido y silencioso.</p></div></div>
+<p>Un SSD puede ser <b>SATA</b> o <b>NVMe sobre PCIe</b>. NVMe suele ofrecer mayor velocidad. <b>RAID 0</b> combina unidades para rendimiento, pero no aporta redundancia; <b>RAID 1</b> duplica datos para tolerar el fallo de una unidad (no sustituye una copia de seguridad).</p>
+</div></details>
+
+<details class="topic"><summary>11. Tarjeta gráfica y monitor</summary><div class="inside">
+<p>La <b>GPU</b> procesa gráficos. Puede estar integrada en la CPU o ser una tarjeta dedicada. La dedicada suele tener su propia <b>VRAM</b>.</p>
+<p>Para elegir una gráfica, valora rendimiento, cantidad y tipo de VRAM, consumo, tamaño y conectores de alimentación. Comprueba que cabe en la caja y que la fuente puede alimentarla.</p>
+<p>En un monitor importan la resolución, tamaño, frecuencia de refresco (Hz), tiempo de respuesta y panel. IPS suele destacar por sus ángulos de visión; VA por el contraste; OLED por negros y contraste elevados; TN por rapidez en algunos modelos económicos.</p>
+</div></details>
+
+<details class="topic"><summary>12. Sonido, red y periféricos</summary><div class="inside">
+<ul><li><b>Tarjeta de sonido:</b> gestiona entrada y salida de audio; puede estar integrada o ser dedicada.</li><li><b>Ethernet:</b> conexión de red por cable, normalmente mediante RJ45.</li><li><b>Wi-Fi:</b> conexión inalámbrica a una red.</li><li><b>Bluetooth:</b> conexión inalámbrica de corto alcance para periféricos.</li><li><b>Periféricos de entrada:</b> teclado, ratón, micrófono, escáner.</li><li><b>Periféricos de salida:</b> monitor, altavoces, impresora.</li></ul>
+</div></details>
+
+<details class="topic"><summary>13. Cómo elegir componentes compatibles</summary><div class="inside">
+<p>La elección debe partir del uso y del presupuesto, no de comprar el componente más caro.</p>
+<ol><li>Define para qué se utilizará el equipo.</li><li>Fija el presupuesto total.</li><li>Comprueba la compatibilidad CPU–socket–placa.</li><li>Comprueba RAM compatible y capacidad admitida.</li><li>Comprueba caja, formato, disipador y tamaño de GPU.</li><li>Comprueba fuente de alimentación y conectores necesarios.</li><li>Comprueba almacenamiento, puertos y necesidades futuras.</li><li>Consulta las especificaciones oficiales y compara pruebas de rendimiento.</li></ol>
+</div></details>
+
+<div class="panel"><h2>Errores típicos que debes evitar</h2>
+<ul><li>Pensar que más GHz siempre significa más rendimiento.</li><li>Creer que cualquier procesador sirve en cualquier placa base.</li><li>Confundir M.2 con NVMe: M.2 es formato y NVMe es protocolo.</li><li>Mezclar módulos DDR4 y DDR5.</li><li>Olvidar comprobar el tamaño de la GPU y la potencia de la fuente.</li><li>Confundir RAM (temporal) con almacenamiento (permanente).</li><li>Pensar que RAID sustituye a una copia de seguridad.</li></ul></div></template>
+<template id="key-mon"><div class="panel"><h2>Repaso rápido: lo imprescindible</h2>
+<table><tr><th>Concepto</th><th>Qué debes recordar</th></tr>
+<tr><td>CPU</td><td>Ejecuta instrucciones; UC coordina y ALU calcula.</td></tr>
+<tr><td>RAM</td><td>Memoria temporal y volátil.</td></tr>
+<tr><td>SSD</td><td>Almacenamiento rápido sin piezas móviles.</td></tr>
+<tr><td>HDD</td><td>Almacenamiento mecánico con platos.</td></tr>
+<tr><td>Socket</td><td>Debe ser compatible con la CPU.</td></tr>
+<tr><td>Chipset</td><td>Gestiona comunicaciones y funciones de la placa.</td></tr>
+<tr><td>UEFI</td><td>Firmware moderno que inicia y configura el equipo.</td></tr>
+<tr><td>PCIe</td><td>Bus de expansión para GPU y otros dispositivos.</td></tr>
+<tr><td>M.2</td><td>Formato; puede usar SATA o PCIe/NVMe.</td></tr>
+<tr><td>Throttling</td><td>Reducción de velocidad por temperatura o límites de potencia.</td></tr>
+<tr><td>Dual channel</td><td>Dos canales de RAM para más ancho de banda.</td></tr>
+<tr><td>RAID 1</td><td>Espejo de datos en dos unidades.</td></tr>
+<tr><td>VRAM</td><td>Memoria usada por la tarjeta gráfica.</td></tr>
+<tr><td>RJ45</td><td>Conector de red Ethernet.</td></tr></table>
+<p><b>Consejo:</b> si sabes explicar cada fila con un ejemplo, llevas una buena base para el examen.</p></div></template>
+<template id="notes-digitalitzacio-ra1"><div class="panel"><h2>Apuntes de Digitalización y tecnologías habilitadoras</h2><p>Material de estudio importado de la guía anterior. El examen se realiza con el sistema general de esta plataforma.</p></div>
+<article class="panel"><h2>1. Economía lineal</h2>
+<p>Modelo productivo basado en <b>«Tomar – Producir – Desechar»</b>: extrae recursos naturales, los transforma en productos y finalmente los desecha sin considerar su reutilización. Surgió con la Revolución Industrial del siglo XVIII.</p>
+<div class="grid"><div class="tile"><b>1. Tomar</b>Extraer petróleo, gas, algodón, agua, minerales o madera.</div><div class="tile"><b>2. Producir</b>Transformar materias primas en productos manufacturados.</div><div class="tile"><b>3. Consumir</b>Comprar y utilizar los productos.</div><div class="tile"><b>4. Desechar</b>Al terminar su vida útil, los productos se convierten en residuos.</div></div>
+<h3>Características</h3><ul><li>Uso intensivo de recursos naturales, energía y agua.</li><li>Producción en masa para satisfacer el consumo.</li><li>Obsolescencia programada o percibida: productos diseñados para durar poco o parecer antiguos.</li><li>Gran generación de residuos, que suelen acabar en vertederos o ser incinerados.</li></ul>
+<h3>Ejemplos</h3><div class="grid"><div class="tile"><b>Teléfono móvil</b>Se extraen metales como litio y cobalto, se fabrica, se usa y se desecha cuando se daña o queda desactualizado. Puede generar residuos tecnológicos contaminantes.</div><div class="tile"><b>Botella de plástico</b>Se extrae petróleo para obtener plástico PET, se fabrica la botella, se llena, se utiliza una vez y se tira. Muchas acaban en vertederos o en el mar y tardan cientos de años en degradarse.</div></div>
+<h3>Impactos</h3><ul><li><b>Agotamiento de recursos:</b> la extracción de recursos no renovables supera su capacidad de regeneración.</li><li><b>Crisis de residuos:</b> los desechos y la contaminación amenazan ecosistemas terrestres y marinos.</li><li><b>Emergencia climática:</b> contribuye al cambio climático, la pérdida de biodiversidad y la degradación de ecosistemas.</li></ul></article>
+<article class="panel"><h2>2. Economía circular</h2><p>Cambia cómo diseñamos, producimos y consumimos. No consiste solo en reciclar mejor: busca eliminar el concepto de residuo desde el diseño, mantener productos y materiales circulando al máximo valor y regenerar los sistemas naturales.</p>
+<h3>Los tres principios</h3><div class="grid"><div class="tile"><b>1. Eliminar residuos y contaminación</b>Diseñar productos y procesos que prevengan residuos desde el origen.</div><div class="tile"><b>2. Mantener productos en uso</b>Reutilización, reparación, remanufactura y reciclaje de alta calidad.</div><div class="tile"><b>3. Regenerar sistemas naturales</b>Devolver nutrientes a la tierra, usar energías renovables y fortalecer ecosistemas.</div></div>
+<h3>Beneficios</h3><ul><li>Reduce emisiones de gases de efecto invernadero y contaminación atmosférica.</li><li>Reduce la dependencia de materias primas finitas y volátiles.</li><li>Genera empleo verde y oportunidades en sectores sostenibles.</li><li>Puede reducir costes a largo plazo y mejorar la resiliencia económica.</li></ul>
+<h3>Ejemplos de los apuntes</h3><ul><li>Reciclar botellas de plástico para fabricar alfombrillas y salpicaderos de coches.</li><li>Reaprovechar aceite usado para hacer jabón.</li><li>Usar neumáticos usados para elaborar zapatos.</li><li>Procesar residuos orgánicos para generar biogás y compost.</li><li>Utilizar pan seco para producir cerveza.</li><li>Reciclar botellas de vidrio para fabricar nuevas botellas.</li><li>Aprovechar pulpa y pepitas de la elaboración del vino para elaborar cuero vegano.</li></ul>
+<h3>Cómo se aplica</h3><ul><li>Diseñar productos fáciles de reparar, actualizar y reciclar.</li><li>Compartir, alquilar, reparar y renovar en vez de comprar y desechar.</li><li>Priorizar el acceso al producto frente a la propiedad.</li><li>Crear negocios basados en servicios continuos y no solo en una venta única.</li></ul>
+<div class="note"><b>Recuerda:</b> lineal = tomar, hacer y desechar. Circular = reducir, reutilizar, reciclar y regenerar.</div></article>
+<article class="panel"><h2>3. Economía lineal vs. circular</h2><table><tr><th>Aspecto</th><th>Lineal</th><th>Circular</th></tr><tr><td>Modelo</td><td>Extraer, producir, consumir, desechar.</td><td>Rediseñar, reducir, reutilizar, reciclar.</td></tr><tr><td>Recursos</td><td>Consumo intensivo.</td><td>Uso eficiente y sostenible.</td></tr><tr><td>Residuos</td><td>Genera muchos residuos.</td><td>Minimiza residuos con reutilización y reciclaje.</td></tr><tr><td>Impacto</td><td>Contaminación y agotamiento.</td><td>Reduce impactos ambientales.</td></tr><tr><td>Productos</td><td>Corta duración y desechables.</td><td>Duraderos, reparables y reciclables.</td></tr><tr><td>Economía</td><td>Dependencia de recursos no renovables.</td><td>Sostenibilidad y reducción de costes a largo plazo.</td></tr></table></article>
+<article class="panel"><h2>4. Tecnologías habilitadoras digitales (THD)</h2><p>Una tecnología habilitadora digital es una innovación con mucho conocimiento detrás y gran poder de cambio. Facilita la transformación digital de la industria, agricultura, salud o comercio y permite crear nuevos modelos de negocio.</p><div class="grid"><div class="tile"><b>Inteligencia artificial</b>Máquinas o programas que aprenden de datos y pueden tomar decisiones.</div><div class="tile"><b>Big Data</b>Datos masivos convertidos en conocimiento.</div><div class="tile"><b>Cloud computing</b>Infraestructura y aplicaciones por Internet.</div><div class="tile"><b>Internet de las cosas</b>Objetos físicos conectados a la red.</div></div>
+<h3>Otras tecnologías de los apuntes IT/OT</h3><ul><li><b>5G:</b> conexión móvil muy rápida y con poco retraso.</li><li><b>Robots colaborativos (cobots):</b> trabajan junto a las personas con seguridad.</li><li><b>Impresión 3D:</b> fabrica objetos capa a capa a partir de un diseño digital.</li><li><b>Realidad aumentada:</b> añade imágenes digitales sobre lo que ves en el mundo real.</li></ul></article>
+<article class="panel"><h2>5. Inteligencia artificial</h2><p>La IA permite que los sistemas aprendan de los datos, reconozcan patrones y realicen tareas o tomen decisiones.</p><h3>Tres niveles de complejidad</h3><div class="grid"><div class="tile"><b>Machine Learning</b>Aprende de datos pasados sin programar cada tarea. Ejemplo: filtro antispam.</div><div class="tile"><b>Redes neuronales</b>Inspiradas en el cerebro y capaces de reconocer patrones complejos. Ejemplo: leer matrículas en un parking.</div><div class="tile"><b>Deep Learning</b>Redes neuronales de muchas capas para imagen, voz y texto. Ejemplo: desbloquear el móvil con la cara.</div></div>
+<h3>IA cotidiana</h3><ul><li>Asistentes virtuales como Siri, Alexa o Google Assistant.</li><li>Voz a texto: reconoce sonidos y los convierte en palabras.</li><li>Recomendaciones de Netflix, Amazon y Spotify.</li><li>Vehículos autónomos: sensores y redes neuronales perciben el entorno.</li></ul>
+<p>Dos ramas relacionadas: <b>procesamiento del lenguaje natural</b> (entender y generar lenguaje) y <b>visión por computador</b> (interpretar imágenes y vídeo).</p>
+<h3>IA en empresas</h3><div class="grid"><div class="tile"><b>Aplicaciones</b>Control de procesos, robótica en zonas peligrosas, mantenimiento predictivo, detección de anomalías y automatización industrial.</div><div class="tile"><b>Retos</b>Infraestructura para datos en tiempo real, ética y privacidad de datos del personal y formación continua.</div><div class="tile"><b>Oportunidades</b>Más eficiencia, productividad, precisión, menos desperdicio, decisiones rápidas y seguridad laboral.</div></div></article>
+<article class="panel"><h2>6. Big Data</h2><p>Consiste en capturar, almacenar y procesar cantidades enormes de datos que los métodos tradicionales no pueden manejar, para convertirlos en conocimiento y tomar decisiones estratégicas.</p><h3>Las 5 V</h3><div class="grid"><div class="tile"><b>Volumen</b>Grandes cantidades: terabytes y petabytes.</div><div class="tile"><b>Velocidad</b>Se generan y procesan rápidamente, incluso al instante.</div><div class="tile"><b>Variedad</b>Datos estructurados, semiestructurados y no estructurados.</div><div class="tile"><b>Veracidad</b>Calidad y precisión; hay que filtrar y validar.</div><div class="tile"><b>Valor</b>La información obtenida debe ser útil; es la más importante en los apuntes.</div></div>
+<h3>Herramientas</h3><table><tr><th>Herramienta</th><th>Función</th></tr><tr><td>Hadoop</td><td>Almacenar y procesar en clústeres de servidores.</td></tr><tr><td>Spark</td><td>Procesar en memoria RAM, también en tiempo real.</td></tr><tr><td>NoSQL (MongoDB, Cassandra)</td><td>Bases de datos para datos no estructurados.</td></tr><tr><td>Kafka</td><td>Transportar flujos de datos en tiempo real.</td></tr><tr><td>Flink y Storm</td><td>Procesar flujos continuos con baja latencia.</td></tr><tr><td>ELK</td><td>Recoger, buscar y visualizar logs.</td></tr><tr><td>Data Lake</td><td>Guardar datos en bruto, sin procesar.</td></tr><tr><td>Power BI, Tableau, Qlik</td><td>Crear paneles visuales.</td></tr></table>
+<h3>Aplicaciones</h3><ul><li>Redes sociales: tendencias y personalización.</li><li>Banca: análisis de transacciones para detectar fraudes.</li><li>Salud: prever brotes y personalizar atención.</li><li>Comercio electrónico: recomendaciones y publicidad a medida.</li></ul></article>
+<article class="panel"><h2>7. Cloud Computing</h2><p>Permite utilizar infraestructura, almacenamiento y aplicaciones mediante servidores conectados a Internet.</p><div class="grid"><div class="tile"><b>IaaS · Infraestructura como servicio</b>Alquilas servidores, red y discos virtuales. Ejemplo: máquina virtual en Azure.</div><div class="tile"><b>PaaS · Plataforma como servicio</b>Te dan el entorno para desplegar tu aplicación. Ejemplo: Google App Engine.</div><div class="tile"><b>SaaS · Software como servicio</b>Usas la aplicación terminada desde el navegador. Ejemplos: Gmail y Microsoft 365.</div></div><div class="note"><b>Ventajas:</b> escalabilidad y reducción de costes. <b>Limitaciones:</b> dependencia de Internet y privacidad de los datos.</div></article>
+<article class="panel"><h2>8. Internet de las cosas (IoT)</h2><p>Objetos físicos con sensores y conexión que envían datos o reciben órdenes por Internet, sin que nadie tenga que tocarlos directamente.</p><ul><li><b>Hogar inteligente:</b> termostatos, luces y electrodomésticos controlados desde el móvil.</li><li><b>Wearables:</b> relojes y pulseras que miden actividad y salud y sincronizan datos con una app.</li><li><b>Ciudades inteligentes:</b> sensores controlan tráfico, calidad del aire y alumbrado.</li><li><b>Agricultura inteligente:</b> sensores miden clima, humedad del suelo y estado de plantas para decidir cuándo regar, abonar o cosechar.</li><li><b>Vehículos conectados:</b> coches que navegan, se autodiagnostican y hablan con semáforos inteligentes.</li></ul><div class="note">El IoT es el puente que lleva datos del mundo OT al mundo IT.</div></article>
+<article class="panel"><h2>9. Las cuatro tecnologías juntas</h2><div class="grid"><div class="tile"><b>1. IoT recoge</b>Los dispositivos conectados captan datos en tiempo real.</div><div class="tile"><b>2. Cloud aloja</b>Los datos se guardan en la nube y son accesibles.</div><div class="tile"><b>3. Big Data procesa</b>Gestiona y ordena enormes volúmenes de datos.</div><div class="tile"><b>4. IA decide</b>Encuentra patrones, predice y automatiza decisiones.</div></div><h3>Ejemplo: reloj inteligente</h3><p>Mide el pulso (IoT), sube el dato a la nube (Cloud), se compara con muchos registros (Big Data) y la app avisa si la IA detecta algo raro.</p><h3>Futuro conectado</h3><p>Ciudades inteligentes, agricultura de precisión, salud personalizada e Industria 4.0.</p></article>
+<article class="panel"><h2>10. IT y OT</h2><div class="grid"><div class="tile"><b>IT · Tecnología de la información</b>Trabaja con datos: los guarda, procesa y envía. Incluye ordenadores, servidores, bases de datos, redes, Wi-Fi, Internet y programas.</div><div class="tile"><b>OT · Tecnología de operaciones</b>Trabaja con máquinas: las vigila y controla en el mundo físico. Incluye robots, motores, cintas transportadoras, sensores y autómatas PLC.</div></div>
+<table><tr><th>Aspecto</th><th>IT</th><th>OT</th></tr><tr><td>Trabaja con</td><td>Datos e información.</td><td>Máquinas y procesos físicos.</td></tr><tr><td>Dónde está</td><td>Oficinas y centros de datos.</td><td>Fábricas, plantas y edificios.</td></tr><tr><td>Prioridad</td><td>Que los datos estén seguros.</td><td>Que la máquina no se pare.</td></tr><tr><td>Equipos</td><td>PC, servidor, router.</td><td>PLC, sensor, robot.</td></tr><tr><td>Renovación</td><td>Cada pocos años.</td><td>Los equipos duran muchos años.</td></tr><tr><td>Si falla</td><td>Se pierde información.</td><td>Se para la producción o puede haber peligro.</td></tr></table>
+<h3>Ejemplo: fábrica de zapatillas</h3><div class="grid"><div class="tile"><b>Oficina · IT</b>La web recibe el pedido, el programa calcula el material y un correo avisa de que el paquete ha salido.</div><div class="tile"><b>Planta · OT</b>Un robot corta tela, sensores miden la temperatura del pegamento y una cinta transporta la zapatilla.</div></div>
+<p>Las dos partes se necesitan: el pedido pone en marcha las máquinas y las máquinas cumplen el pedido.</p><div class="note"><b>Convergencia IT/OT:</b> las máquinas envían datos y esos datos mejoran las máquinas. Esto forma parte de la Industria 4.0.</div></article>
+<article class="panel"><h2>11. Tecnologías que conectan y actúan</h2><table><tr><th>Tecnología</th><th>Qué hace</th><th>Ejemplo</th></tr><tr><td>IoT</td><td>Objetos con sensores envían datos por Internet.</td><td>Pulsera de actividad.</td></tr><tr><td>5G</td><td>Conexión móvil rápida y con poco retraso.</td><td>Robot manejado a distancia.</td></tr><tr><td>Cloud</td><td>Guarda datos y usa programas en servidores de Internet.</td><td>Google Drive o iCloud.</td></tr><tr><td>Big Data</td><td>Analiza cantidades enormes de datos.</td><td>Recomendaciones de música.</td></tr><tr><td>IA</td><td>Aprende de datos y toma decisiones.</td><td>Detectar piezas con fallos.</td></tr><tr><td>Cobots</td><td>Robots colaborativos que trabajan con personas.</td><td>Cobot que atornilla.</td></tr><tr><td>Impresión 3D</td><td>Fabrica objetos capa a capa.</td><td>Piezas de recambio.</td></tr><tr><td>Realidad aumentada</td><td>Añade imágenes digitales al mundo real.</td><td>Gafas que guían al técnico.</td></tr></table>
+<h3>Invernadero inteligente</h3><ol><li>Un sensor OT mide la humedad de la tierra.</li><li>IoT + 5G envía el dato por Internet.</li><li>La nube guarda el dato y la IA decide si hay que regar.</li><li>Una válvula OT se abre y riega.</li></ol></article>
+<article class="panel"><h2>12. Ciberseguridad en IT y OT</h2><div class="grid"><div class="tile"><b>En IT se protegen los datos</b>Contraseñas fuertes, copias de seguridad y antivirus ayudan a evitar robos o borrados de información.</div><div class="tile"><b>En OT se protegen las máquinas</b>Se evita que alguien externo pueda parar un robot o cambiar la temperatura de un horno.</div></div><div class="note"><b>Papel del técnico SMX:</b> mantener equipos actualizados, separar la red de oficina de la red de planta y hacer copias de seguridad.</div></article>
+</template>
+<template id="key-digitalitzacio-ra1"><div class="panel"><h2>Repaso rápido: Digitalización</h2><ul><li>Economía lineal: tomar, producir, consumir y desechar.</li><li>Economía circular: eliminar residuos, mantener productos en uso y regenerar sistemas naturales.</li><li>THD: tecnologías que impulsan la transformación digital.</li><li>IA: analiza datos, reconoce patrones y puede generar contenido.</li><li>Big Data: trabaja con grandes cantidades de datos y sus cinco V.</li><li>Cloud: IaaS, PaaS y SaaS.</li><li>IoT: conecta objetos físicos con sensores.</li><li>IT trabaja con información; OT controla procesos y máquinas.</li><li>La ciberseguridad debe proteger tanto los datos como los sistemas industriales.</li></ul></div></template>
+<template id="notes-ia-ra1"><div class="panel"><h2>Apuntes de Inteligencia Artificial</h2><p>Material de estudio importado de la guía anterior. El examen se realiza con el sistema general de esta plataforma.</p></div>
+<article class="panel">
+<h2>1. Historia y evolución de la informática</h2>
+<p>La informática ha evolucionado desde grandes ordenadores dedicados al cálculo y procesamiento hasta sistemas conectados y herramientas capaces de generar contenido.</p>
+<div class="timeline">
+<div class="time"><b>1940–1950</b>Ordenadores electrónicos: cálculo y procesamiento.</div>
+<div class="time"><b>1970–1980</b>Microprocesador y PC: la informática llega al escritorio.</div>
+<div class="time"><b>1990–2000</b>Internet y Web: los ordenadores se conectan.</div>
+<div class="time"><b>2000–2010</b>Móvil + nube: servicios y datos en todas partes.</div>
+<div class="time"><b>2010–2020</b>Machine Learning: los sistemas detectan patrones.</div>
+<div class="time"><b>2020–hoy</b>IA generativa: texto, imagen, audio y código.</div>
+</div>
+<div class="callout"><strong>Idea clave:</strong> el cambio reciente es que, además de procesar información o detectar patrones, la IA generativa puede producir contenido nuevo, como texto, imágenes, audio, vídeo o código.</div>
+</article>
+<article class="panel">
+<h2>2. Conceptos básicos de Inteligencia Artificial</h2>
+<p>La Inteligencia Artificial (IA) engloba sistemas informáticos que analizan información y pueden producir respuestas, reconocer patrones, hacer recomendaciones o ayudar a tomar decisiones.</p>
+<div class="grid">
+<div class="tile"><strong>Programación tradicional</strong>Una persona define reglas e instrucciones y el ordenador las ejecuta.</div>
+<div class="tile"><strong>Aprendizaje automático (Machine Learning)</strong>El sistema aprende patrones a partir de datos y ejemplos.</div>
+<div class="tile"><strong>IA generativa</strong>Genera contenido nuevo, como texto, imágenes, audio, vídeo o código.</div>
+</div>
+<h3>Ejemplos cotidianos</h3>
+<ul>
+<li>Una aplicación recomienda una canción.</li>
+<li>Un móvil reconoce una cara o una imagen.</li>
+<li>Un sistema clasifica un correo como spam.</li>
+<li>Un asistente responde preguntas o ayuda a explicar código.</li>
+</ul>
+<div class="callout"><strong>Recuerda:</strong> que una respuesta suene convincente no significa que sea correcta. La IA no sabe automáticamente qué es verdad.</div>
+</article>
+<article class="panel">
+<h2>3. Tipos de IA y cómo funcionan</h2>
+<h3>Según su capacidad</h3>
+<div class="grid">
+<div class="tile"><strong>IA débil</strong>Está diseñada para tareas concretas: detectar spam, recomendar música, reconocer imágenes, traducir o generar texto. Es la que encontramos actualmente en nuestro día a día.</div>
+<div class="tile"><strong>IA fuerte</strong>Sería capaz de comprender, aprender y razonar de forma general, de manera comparable a una persona. Es una idea de una IA mucho más avanzada.</div>
+</div>
+<h3>Dos enfoques para resolver problemas</h3>
+<div class="grid">
+<div class="tile"><strong>Razonamiento simbólico</strong>Trabaja principalmente con reglas y condiciones definidas por personas. Ejemplo: «SI hay cinco intentos fallidos de contraseña, ENTONCES bloquear temporalmente la cuenta». Sus reglas se pueden seguir con facilidad.</div>
+<div class="tile"><strong>Redes neuronales</strong>Aprenden patrones a partir de muchos datos. Por ejemplo, analizan correos clasificados como normales o spam para aprender a distinguirlos, sin escribir una regla para cada caso.</div>
+</div>
+<h3>¿Por qué importan los datos?</h3>
+<p>Los datos son ejemplos e información que ayudan al sistema a aprender patrones. Si son incorrectos, incompletos o poco representativos, el resultado también puede ser incorrecto o desigual.</p>
+<div class="callout"><strong>Sesgo:</strong> ocurre cuando los datos o el diseño pueden producir resultados desiguales o poco representativos. Por ejemplo, una IA de selección laboral podría favorecer perfiles parecidos a los que aparecen en sus datos de entrenamiento.</div>
+</article>
+<article class="panel">
+<h2>4. Prompts y cómo elaborarlos</h2>
+<p>Un <strong>prompt</strong> es la instrucción o petición que escribimos para indicar a una IA qué necesitamos. Un buen prompt no es una frase mágica: debe explicar bien la petición.</p>
+<div class="grid">
+<div class="tile"><strong>1. Contexto</strong>Quién eres, qué estudias y qué necesitas.</div>
+<div class="tile"><strong>2. Tarea</strong>Qué quieres que haga exactamente.</div>
+<div class="tile"><strong>3. Condiciones</strong>Nivel, límites, ejemplos, pasos o restricciones.</div>
+<div class="tile"><strong>4. Formato</strong>Cómo quieres recibir la respuesta.</div>
+</div>
+<div class="callout"><strong>Fórmula:</strong> CONTEXTO + TAREA + CONDICIONES + FORMATO.</div>
+<h3>Ejemplo de prompt poco concreto</h3>
+<p class="muted">«Explícame qué es una dirección IP».</p>
+<h3>Ejemplo de prompt mejor elaborado</h3>
+<p>«Soy estudiante de 1.º de SMX y estoy empezando redes. Explícame qué es una dirección IP con un ejemplo sencillo. Después hazme tres preguntas para comprobar si lo he entendido y no me des las respuestas hasta que yo conteste».</p>
+<h3>Usar la IA como tutor</h3>
+<ul>
+<li><strong>Entender:</strong> pedir que explique un concepto de otra manera y con un ejemplo.</li>
+<li><strong>Practicar:</strong> pedir ejercicios de dificultad progresiva.</li>
+<li><strong>Preguntar:</strong> pedir preguntas de una en una y responder antes de ver la solución.</li>
+<li><strong>Recibir feedback:</strong> pedir pistas y correcciones, no solo la respuesta.</li>
+<li><strong>Repasar:</strong> convertir apuntes en preguntas de repaso.</li>
+<li><strong>Planificar:</strong> distribuir un tema en varias sesiones de estudio.</li>
+</ul>
+</article>
+<article class="panel">
+<h2>5. Ventajas, riesgos y errores de la IA</h2>
+<div class="grid">
+<div class="tile"><strong>Ventajas</strong>
+<ul>
+<li>Explicar conceptos de otra manera.</li>
+<li>Generar ejemplos y ejercicios.</li>
+<li>Organizar ideas y crear borradores.</li>
+<li>Analizar errores y explicar código o comandos.</li>
+<li>Analizar grandes cantidades de información y detectar patrones.</li>
+</ul>
+</div>
+<div class="tile"><strong>Riesgos y errores</strong>
+<ul>
+<li>Puede inventar información.</li>
+<li>Puede interpretar mal el contexto.</li>
+<li>Puede producir resultados sesgados por los datos o el diseño.</li>
+<li>Puede generar código o comandos peligrosos.</li>
+<li>Un resultado automático no garantiza que sea correcto.</li>
+<li>Compartir datos sensibles puede ser peligroso.</li>
+</ul>
+</div>
+</div>
+<h3>Ejemplo aplicado a SMX</h3>
+<p>Una IA puede detectar muchos intentos de acceso desde una dirección IP y recomendar bloquearla. Pero quizá se trata de una prueba de un técnico o de una configuración incorrecta. Antes de bloquearla, hay que revisar los registros y comprobar qué ocurre.</p>
+<div class="callout"><strong>Importante:</strong> nunca ejecutes ciegamente un comando generado por IA. Comprueba qué hace cada parte, qué archivos o servicios modifica, si necesita privilegios de administrador y si puedes consultar documentación fiable.</div>
+</article>
+<article class="panel">
+<h2>6. Uso responsable de la IA y toma de decisiones</h2>
+<h3>La IA puede recomendar; una persona puede decidir</h3>
+<p>Un flujo responsable puede ser: <strong>IA analiza → IA recomienda → persona revisa → persona decide</strong>. Así aprovechamos la velocidad de la herramienta sin renunciar al criterio humano.</p>
+<div class="grid">
+<div class="tile"><strong>Responsabilidad</strong>Si una decisión afecta a personas, debe estar claro quién supervisa el sistema y quién responde por sus consecuencias. La IA no asume responsabilidades como una persona.</div>
+<div class="tile"><strong>Supervisión</strong>Una persona puede revisar, cuestionar o detener una decisión automatizada.</div>
+<div class="tile"><strong>Explicabilidad</strong>Consiste en intentar comprender por qué un sistema ha llegado a un resultado. Conocer las razones permite valorar si tiene sentido.</div>
+<div class="tile"><strong>Verificación</strong>Hay que comprobar la información importante antes de aceptarla o actuar.</div>
+</div>
+<h3>Reglas para utilizarla responsablemente</h3>
+<ul>
+<li>Comprende y explica lo que entregas.</li>
+<li>No compartas contraseñas ni datos sensibles.</li>
+<li>Verifica la información importante.</li>
+<li>No ejecutes código o comandos que no entiendas.</li>
+<li>Indica el uso de IA cuando se solicite.</li>
+<li>Utiliza la IA para aprender, no para ocultar que no sabes.</li>
+<li>Ante un error: analiza, prueba y documenta.</li>
+</ul>
+<div class="callout"><strong>Idea clave para SMX:</strong> la IA propone. El técnico comprende, comprueba, decide y documenta. Cuanto más importantes sean las consecuencias de un error, más importante es revisar el resultado.</div>
+</article>
+</template>
+<template id="key-ia-ra1"><div class="panel"><h2>Repaso rápido: Inteligencia Artificial</h2><ul><li>La informática ha evolucionado desde el cálculo hasta los sistemas conectados y la IA generativa.</li><li>La IA analiza información, reconoce patrones y produce respuestas o recomendaciones.</li><li>Machine Learning aprende patrones a partir de datos.</li><li>La IA débil realiza tareas concretas; la IA fuerte es una idea hipotética de inteligencia general.</li><li>Los datos poco representativos pueden provocar sesgos.</li><li>Un buen prompt incluye contexto, tarea, condiciones y formato.</li><li>La IA puede ayudar a estudiar, pero sus respuestas deben verificarse.</li><li>Una persona debe supervisar las decisiones importantes.</li><li>No se deben compartir contraseñas ni datos sensibles.</li></ul></div></template>
+<template id="notes-sostenibilitat-ra1">
+<article class="study-content">
+<h2>RA1 · Sostenibilidad y tecnología</h2>
+<p>Resumen de estudio elaborado a partir de la presentación <b>UD1 · Sostenibilidad y tecnología – Repaso</b>.</p>
+<details class="topic"><summary>1. ¿Qué es la sostenibilidad?</summary><div class="inside"><p>Consiste en <b>satisfacer las necesidades actuales sin comprometer las de las generaciones futuras</b>. No significa únicamente proteger el medio ambiente: hay que equilibrar tres dimensiones.</p>
+<ul><li><b>Ambiental:</b> uso de recursos, energía, contaminación y residuos.</li><li><b>Social:</b> condiciones laborales, igualdad, accesibilidad y brecha digital.</li><li><b>Económica:</b> costes, eficiencia y viabilidad a largo plazo.</li></ul>
+<p>Una decisión puede beneficiar una dimensión y perjudicar otra, por eso hay que valorar el conjunto.</p></div></details>
+<details class="topic"><summary>2. El impacto de la informática</summary><div class="inside"><p>Internet y los servicios en la nube dependen de equipos físicos: dispositivos, routers, redes, servidores y centros de datos. Todo ello necesita electricidad, materiales, mantenimiento y refrigeración. Además, fabricar y transportar los equipos consume recursos, agua y energía.</p>
+<p>Al subir una foto a la nube, por ejemplo, viaja desde el móvil mediante Wi-Fi o datos e Internet hasta un servidor físico, donde queda almacenada.</p></div></details>
+<details class="topic"><summary>3. Ciclo de vida de un dispositivo</summary><div class="inside"><ol><li>Extracción de materias primas.</li><li>Fabricación.</li><li>Transporte.</li><li>Uso y mantenimiento.</li><li>Reparación o reutilización.</li><li>Gestión final y reciclaje de los residuos de aparatos eléctricos y electrónicos (RAEE).</li></ol>
+<p>El impacto ambiental empieza antes de encender el dispositivo por primera vez y continúa cuando se desecha.</p></div></details>
+<details class="topic"><summary>4. Agenda 2030 y ODS</summary><div class="inside"><p>La Agenda 2030 fue aprobada en 2015 por los Estados miembros de la ONU. Incluye <b>17 Objetivos de Desarrollo Sostenible (ODS)</b> y 169 metas con horizonte 2030. Integra retos ambientales, sociales y económicos.</p>
+<ul><li><b>ODS 4 · Educación de calidad:</b> acceso a equipos y aprendizaje digital.</li><li><b>ODS 7 · Energía asequible y no contaminante:</b> eficiencia de equipos y centros de datos.</li><li><b>ODS 8 · Trabajo decente:</b> condiciones laborales en fabricación y reciclaje.</li><li><b>ODS 9 · Industria, innovación e infraestructura:</b> redes e innovación tecnológica.</li><li><b>ODS 10 · Reducción de las desigualdades:</b> accesibilidad y brecha digital.</li><li><b>ODS 12 · Producción y consumo responsables:</b> reparar, actualizar y gestionar correctamente los RAEE.</li><li><b>ODS 13 · Acción por el clima:</b> reducir emisiones e impactos tecnológicos.</li></ul>
+<p><b>Importante:</b> una misma acción puede relacionarse con varios ODS.</p></div></details>
+<details class="topic"><summary>5. Caso práctico: renovar ordenadores</summary><div class="inside"><p>Ante un parque de 100 ordenadores, la presentación propone distinguir necesidades antes de sustituirlos: 35 funcionan correctamente y se pueden mantener; 30 tienen HDD y se puede valorar instalar un SSD; 15 necesitan más RAM; 10 necesitan limpieza; y 10 son demasiado antiguos y requieren evaluar una sustitución responsable.</p>
+<p>Ante la propuesta de renovar 200 ordenadores, hay argumentos a favor (rendimiento, compatibilidad, seguridad, productividad y eficiencia durante el uso) y a favor de mantenerlos (menos fabricación, menos residuos y menores costes). También existen alternativas como instalar SSD, ampliar RAM y prolongar la vida útil.</p>
+<p><b>Conclusión:</b> hay que comparar datos, necesidades, costes e impactos. No existe una respuesta automática válida para todos los casos.</p></div></details>
+<details class="topic"><summary>6. Ideas clave de las actividades</summary><div class="inside"><ul><li>Relacionar las dimensiones de la sostenibilidad con situaciones reales de informática.</li><li>Relacionar situaciones con los ODS y justificar la elección.</li><li>Debatir usando argumentos y evidencias.</li><li>Investigar fuentes, comparar alternativas y conectar la tecnología con los ODS 9, 12 y 13.</li></ul></div></details>
+</article>
+</template>
+<template id="key-sostenibilitat-ra1"><div class="panel"><h2>Repaso rápido · Sostenibilidad y tecnología</h2><ul>
+<li>Sostenibilidad: satisfacer las necesidades actuales sin comprometer las futuras.</li><li>Tres dimensiones: ambiental, social y económica.</li><li>La informática necesita dispositivos, redes, servidores, electricidad, materiales y refrigeración.</li><li>El ciclo de vida incluye extracción, fabricación, transporte, uso, mantenimiento, reparación/reutilización y gestión final.</li><li>RAEE: residuos de aparatos eléctricos y electrónicos.</li><li>Agenda 2030: aprobada en 2015; 17 ODS y 169 metas.</li><li>ODS relacionados: 4 educación, 7 energía, 8 trabajo, 9 innovación, 10 desigualdades, 12 consumo responsable y 13 clima.</li><li>Antes de renovar equipos, valorar mantenimiento, SSD, ampliación de RAM, limpieza y sustitución responsable.</li><li>Decidir comparando necesidades, costes e impactos; una acción puede contribuir a varios ODS.</li>
+</ul></div></template>
+<template id="notes-so-monolloc-ra1">
+<article class="study-content">
+  <h2>RA1 · Sistemas operativos</h2>
+  <p>Apuntes de teoría organizados por temas. Abre cada apartado y repasa los conceptos y ejemplos.</p>
+<details class="topic"><summary>1. ¿Qué es un sistema operativo?</summary><div class="inside"><p>Un <strong>sistema operativo (SO)</strong> es el software fundamental del ordenador. Administra los recursos del equipo y permite ejecutar aplicaciones e interactuar con el hardware.</p>
+<div class="grid">
+<div class="mini"><h3>Gestiona procesos</h3><p>Organiza la ejecución de los programas y reparte el tiempo de CPU.</p></div>
+<div class="mini"><h3>Gestiona memoria</h3><p>Controla y asigna la memoria que necesitan los procesos.</p></div>
+<div class="mini"><h3>Gestiona archivos</h3><p>Permite crear, organizar, localizar y administrar archivos y directorios.</p></div>
+<div class="mini"><h3>Gestiona dispositivos</h3><p>Coordina el uso del hardware y se comunica con él mediante controladores.</p></div>
+</div>
+<h3>Kernel o núcleo</h3>
+<p>Es la parte central del sistema operativo. Se ocupa de funciones esenciales y de la comunicación con los recursos del equipo.</p>
+<h3>Interfaz de usuario</h3>
+<p>Es el medio que permite al usuario comunicarse con el sistema operativo. Puede ofrecer un entorno gráfico o una interfaz de comandos.</p>
+<h3>Arranque del sistema</h3>
+<p>Durante el arranque, el equipo realiza las operaciones iniciales y carga el sistema operativo en memoria para que pueda empezar a funcionar.</p>
+<h3>Tipos y ejemplos</h3>
+<ul>
+<li><strong>Windows:</strong> sistema operativo utilizado en ordenadores personales.</li>
+<li><strong>Linux:</strong> sistema operativo que también puede utilizarse en ordenadores y servidores.</li>
+<li><strong>Multiusuario:</strong> permite gestionar el uso del sistema por varios usuarios.</li>
+<li><strong>Multitarea:</strong> permite gestionar la ejecución de varias tareas o procesos.</li>
+</ul>
+<div class="mini"><strong>Idea clave:</strong> el sistema operativo coordina el hardware, los programas y el usuario. Sin él, las aplicaciones no dispondrían de una forma común de utilizar los recursos del ordenador.</div>
+<p class="source-note">Resumen organizado a partir de los temas de las presentaciones compartidas. Los ejemplos concretos de dispositivos y comandos se mantienen en sus apartados correspondientes.</p></div></details>
+<details class="topic"><summary>2. Carpetas y directorios</summary><div class="inside"><p class="lead">Una carpeta o directorio es un contenedor con nombre que guarda archivos y otros directorios.</p>
+<div class="grid">
+<div class="mini"><h3>Directorio</h3><p>Contiene archivos y otras carpetas.</p></div>
+<div class="mini"><h3>Subdirectorio</h3><p>Es un directorio que está dentro de otro.</p></div>
+<div class="mini"><h3>Directorio raíz</h3><p>Es el primero de todos. En Windows hay una raíz por unidad, como <code>C:\</code>; en Linux la raíz es <code>/</code>.</p></div>
+<div class="mini"><h3>Árbol de directorios</h3><p>Representa cómo se organizan las carpetas unas dentro de otras.</p></div>
+</div>
+<h3>Ejemplo de árbol</h3>
+<pre>/
+├── home
+│   ├── ana
+│   │   ├── notas.txt
+│   │   └── fotos
+│   │       └── playa.jpg
+│   └── luis
+│       └── tarea.txt
+├── etc
+└── var</pre>
+<h3>Rutas</h3>
+<ul>
+<li><strong>Ruta absoluta:</strong> empieza desde la raíz o unidad y permite localizar un archivo independientemente de dónde estemos. Ejemplo: <code>C:\Users\ana\Documents\smx</code>.</li>
+<li><strong>Ruta relativa:</strong> empieza desde la carpeta en la que estamos. Ejemplo: <code>cd smx</code>.</li>
+<li><strong><code>.</code>:</strong> la carpeta actual.</li>
+<li><strong><code>..</code>:</strong> la carpeta superior o «madre».</li>
+</ul>
+<h3>Operaciones habituales en Windows PowerShell</h3>
+<table><thead><tr><th>Operación</th><th>Comando</th><th>Función</th></tr></thead><tbody>
+<tr><td>Crear</td><td><code>mkdir nombre</code></td><td>Crea una carpeta.</td></tr>
+<tr><td>Entrar</td><td><code>cd nombre</code></td><td>Cambia al directorio indicado.</td></tr>
+<tr><td>Ver contenido</td><td><code>dir</code></td><td>Muestra el contenido de la carpeta.</td></tr>
+<tr><td>Ver árbol</td><td><code>tree /f</code></td><td>Muestra la estructura, incluidos los archivos.</td></tr>
+<tr><td>Copiar</td><td><code>copy origen destino -Recurse</code></td><td>Copia una carpeta con su contenido.</td></tr>
+<tr><td>Mover</td><td><code>move origen destino</code></td><td>Mueve la carpeta; si el destino no existe, puede cambiarle el nombre.</td></tr>
+<tr><td>Renombrar</td><td><code>ren carpeta nombre_nuevo</code></td><td>Cambia el nombre.</td></tr>
+<tr><td>Borrar</td><td><code>rmdir nombre</code></td><td>Borra una carpeta. En PowerShell no la envía a la Papelera.</td></tr>
+</tbody></table>
+<div class="mini"><strong>Recuerda:</strong> en PowerShell, al copiar una carpeta con contenido se utiliza <code>-Recurse</code>. Sin ese parámetro, la copia puede quedar vacía. Ten cuidado al borrar: desde la consola no se utiliza la Papelera.</div>
+<h3>Ejemplo práctico</h3>
+<pre>mkdir SMX_Sistemas_Operativos
+cd SMX_Sistemas_Operativos
+mkdir Practica_01
+cd Practica_01
+dir</pre></div></details>
+<details class="topic"><summary>3. Estados de un proceso</summary><div class="inside"><p class="lead">Un proceso es una instancia de un programa en ejecución, con recursos asignados. Durante su vida puede pasar por distintos estados.</p>
+<div class="flow">
+<span class="step">Nuevo</span><span class="arrow">→</span><span class="step">Preparado / Listo</span><span class="arrow">→</span><span class="step">En ejecución</span><span class="arrow">→</span><span class="step">Terminado</span>
+</div>
+<div class="grid">
+<div class="mini"><h3>Nuevo</h3><p>El proceso acaba de crearse.</p></div>
+<div class="mini"><h3>Preparado o listo</h3><p>Está preparado para ejecutarse y espera su turno para utilizar la CPU.</p></div>
+<div class="mini"><h3>En ejecución</h3><p>Está utilizando la CPU en ese momento.</p></div>
+<div class="mini"><h3>Espera o bloqueado</h3><p>Está esperando algo, por ejemplo una operación de entrada/salida o una lectura del disco. Mientras espera, no necesita la CPU.</p></div>
+<div class="mini"><h3>Terminado</h3><p>Ha finalizado su ejecución.</p></div>
+</div>
+<h3>Transiciones habituales</h3>
+<table><thead><tr><th>De → A</th><th>Cuándo ocurre</th></tr></thead><tbody>
+<tr><td>Nuevo → Preparado</td><td>El proceso se crea y queda listo para ejecutarse.</td></tr>
+<tr><td>Preparado → En ejecución</td><td>Se le asigna la CPU.</td></tr>
+<tr><td>En ejecución → Bloqueado</td><td>Debe esperar una operación de E/S u otro evento.</td></tr>
+<tr><td>Bloqueado → Preparado</td><td>Termina la espera (nunca pasa directamente a ejecución).</td></tr>
+<tr><td>En ejecución → Preparado</td><td>Cede la CPU o se agota su turno.</td></tr>
+<tr><td>En ejecución → Terminado</td><td>Finaliza su ejecución.</td></tr>
+</tbody></table>
+<p>Cuando termina la espera, el proceso puede volver al estado <strong>preparado</strong>. También puede volver a preparado al ceder la CPU.</p>
+<div class="mini"><strong>Idea clave:</strong> un proceso bloqueado no está usando la CPU; espera a que ocurra algo. Un proceso preparado sí puede ejecutarse, pero está esperando su turno.</div></div></details>
+<details class="topic"><summary>4. Dispositivos de entrada y salida</summary><div class="inside"><p class="lead">El sistema operativo controla los dispositivos del ordenador y permite que las aplicaciones y el hardware se comuniquen.</p>
+<div class="grid">
+<div class="mini"><span class="tag">Entrada</span><h3>Introducen información</h3><p>Envían datos u órdenes desde el usuario o el exterior hacia el ordenador.</p><p><strong>Ejemplo de los apuntes:</strong> teclado. <em>Ampliación:</em> ratón.</p></div>
+<div class="mini"><span class="tag">Salida</span><h3>Presentan información</h3><p>Permiten que el ordenador muestre o entregue información al usuario.</p><p><strong>Ejemplos de los apuntes:</strong> pantalla e impresora. <em>Ampliación:</em> altavoces.</p></div>
+<div class="mini"><span class="tag">Entrada y salida</span><h3>Intercambian información</h3><p>Pueden enviar y recibir datos. Los apuntes no desarrollan ejemplos; <em>ampliación:</em> pantalla táctil, memoria USB.</p></div>
+</div>
+<h3>Controladores o drivers</h3>
+<p>Un <strong>controlador (driver)</strong> es un software que permite al sistema operativo comunicarse con un dispositivo concreto. Puede ser necesario instalarlo o actualizarlo.</p>
+<div class="mini">En Windows se pueden localizar los dispositivos desde <strong>Inicio → Administrador de dispositivos</strong>.</div></div></details>
+<details class="topic"><summary>5. Periféricos</summary><div class="inside"><p class="lead">Son dispositivos conectados al ordenador que permiten introducir información, recibir resultados o intercambiar datos con el equipo.</p>
+<table><thead><tr><th>Tipo</th><th>Para qué sirve</th><th>Ejemplos que aparecen en los apuntes</th></tr></thead><tbody>
+<tr><td><strong>Entrada</strong></td><td>Introducir datos en el ordenador.</td><td>Teclado (ampliación: ratón).</td></tr>
+<tr><td><strong>Salida</strong></td><td>Mostrar o producir información del ordenador.</td><td>Pantalla, impresora (ampliación: altavoces).</td></tr>
+<tr><td><strong>Entrada/salida</strong></td><td>Enviar y recibir información.</td><td>Ampliación: pantalla táctil, memoria USB.</td></tr>
+</tbody></table>
+<p>El sistema operativo administra estos dispositivos mediante sus controladores o <strong>drivers</strong>.</p>
+<div class="mini"><strong>Importante sobre el material:</strong> los documentos aportados explican que el SO controla el teclado, la pantalla, la impresora y otros periféricos mediante drivers. No incluyen una clasificación extensa ni una lista completa de periféricos; por eso el resumen mantiene los ejemplos que sí aparecen.</div></div></details>
+</article>
+</template>
+<template id="key-so-monolloc-ra1">
+<div class="panel">
+<h2>Repaso rápido · Sistemas operativos</h2>
+<ul>
+<li><b>Sistema operativo:</b> software fundamental que administra los recursos del ordenador y permite ejecutar aplicaciones.</li>
+<li><b>Funciones principales:</b> gestionar procesos, memoria, archivos y dispositivos.</li>
+<li><b>Kernel o núcleo:</b> parte central del sistema operativo.</li>
+<li><b>Interfaz de usuario:</b> medio de comunicación con el SO; puede ser gráfica o de comandos.</li>
+<li><b>Arranque:</b> operaciones iniciales y carga del sistema operativo en memoria.</li>
+<li><b>Directorios:</b> organizan archivos y otras carpetas; la raíz es <code>C:\\</code> en Windows y <code>/</code> en Linux.</li>
+<li><b>Ruta absoluta:</b> comienza desde la raíz o unidad. <b>Ruta relativa:</b> parte de la ubicación actual.</li>
+<li><b>PowerShell:</b> <code>mkdir</code> crea, <code>cd</code> cambia de directorio, <code>dir</code> lista, <code>tree /f</code> muestra el árbol, <code>copy</code> copia, <code>move</code> mueve, <code>ren</code> renombra y <code>rmdir</code> elimina.</li>
+<li><b>Proceso:</b> instancia de un programa en ejecución.</li>
+<li><b>Estados:</b> nuevo, preparado/listo, en ejecución, bloqueado/en espera y terminado.</li>
+<li><b>Bloqueado:</b> espera una operación o evento. <b>Preparado:</b> espera su turno para utilizar la CPU.</li>
+<li><b>Entrada:</b> introduce datos (teclado). <b>Salida:</b> presenta información (pantalla e impresora).</li>
+<li><b>Entrada/salida:</b> intercambia información en ambos sentidos.</li>
+<li><b>Driver:</b> software que permite al sistema operativo comunicarse con un dispositivo.</li>
+<li><b>Periféricos:</b> dispositivos conectados al ordenador para introducir, recibir o intercambiar información.</li>
+</ul>
+</div>
+</template>
+<template id="notes-ofimatica-ra1">
+<div class="panel"><h2>Cómo estudiar este resumen</h2><p>Estudia los apartados en orden: primero conoce la interfaz de Word, después practica el formato del texto y los párrafos, y finalmente trabaja con tabulaciones, tablas e índices. Los pasos y nombres de menús siguen los materiales aportados de Word 365.</p><span class="tag">Ofimática</span><span class="tag">1.º SMX</span><span class="tag">Word 365</span></div>
+
+<details class="topic" open><summary>1. Introducción a Microsoft Word</summary><div class="inside">
+<p><b>Un procesador de textos</b> es una aplicación que permite crear, editar, dar formato, guardar, imprimir y compartir documentos. En el curso se utiliza Microsoft Word de Microsoft 365.</p>
+<p>Word permite elaborar cartas, informes, trabajos académicos, presupuestos, currículums, manuales y formularios. Escribir el contenido y darle formato son tareas diferentes: podemos escribir primero y modificar después su apariencia, o configurar el formato antes de comenzar.</p>
+<h3>Partes principales de la ventana</h3>
+<table><thead><tr><th>Elemento</th><th>Función</th></tr></thead><tbody>
+<tr><td>Barra de título</td><td>Muestra el nombre del documento.</td></tr>
+<tr><td>Opciones y pestañas</td><td>Organizan las herramientas. Entre las pestañas están Inicio, Insertar, Disposición, Referencias, Revisar y Vista.</td></tr>
+<tr><td>Área del documento</td><td>Zona donde escribimos.</td></tr>
+<tr><td>Regla</td><td>Permite trabajar con sangrías y tabulaciones.</td></tr>
+<tr><td>Barra de estado</td><td>Ofrece información como número de páginas, palabras e idioma.</td></tr>
+</tbody></table>
+<p><b>Guardar:</b> podemos trabajar con archivos en OneDrive o guardar una copia en el equipo. El formato habitual de Word es <code>.docx</code>. Como hábito, guarda al comenzar, durante el trabajo y antes de entregar.</p>
+<h3>Seleccionar antes de modificar</h3>
+<p>Si queremos cambiar algo que ya está escrito, primero debemos seleccionarlo y después aplicar el formato. Atajos que aparecen en el material introductorio:</p>
+<table><thead><tr><th>Acción</th><th>Atajo indicado</th></tr></thead><tbody>
+<tr><td>Seleccionar todo</td><td>Ctrl + A</td></tr><tr><td>Copiar</td><td>Ctrl + C</td></tr><tr><td>Cortar</td><td>Ctrl + X</td></tr><tr><td>Pegar</td><td>Ctrl + V</td></tr><tr><td>Deshacer / rehacer</td><td>Ctrl + Z / Ctrl + Y</td></tr><tr><td>Negrita / cursiva / subrayado</td><td>Ctrl + B / Ctrl + I / Ctrl + U</td></tr>
+</tbody></table>
+<p class="mini">Nota: el propio material advierte que algunos atajos pueden variar según el idioma de instalación de Word.</p>
+</div></details>
+
+<details class="topic"><summary>2. Formato de caracteres, párrafos y marcas de formato</summary><div class="inside">
+<p>En <b>Inicio → Fuente</b> encontramos herramientas que cambian el aspecto de las letras:</p>
+<ul><li><b>Negrita:</b> hace que el texto destaque.</li><li><b>Cursiva:</b> inclina los caracteres.</li><li><b>Subrayado:</b> añade una línea debajo; existen estilos distintos, como doble, grueso, ondulado y punto-punto-raya.</li><li><b>Tamaño de fuente:</b> se expresa en puntos (pt).</li></ul>
+<p>Hay que distinguir entre <b>formato de carácter</b>, que afecta a las letras seleccionadas, y <b>formato de párrafo</b>, que afecta al párrafo completo.</p>
+<h3>Alineación de párrafo</h3>
+<table><thead><tr><th>Alineación</th><th>Resultado</th></tr></thead><tbody><tr><td>Izquierda</td><td>Texto alineado al margen izquierdo.</td></tr><tr><td>Centrada</td><td>Texto situado en el centro.</td></tr><tr><td>Derecha</td><td>Texto alineado al margen derecho.</td></tr><tr><td>Justificada</td><td>Texto alineado a ambos márgenes.</td></tr></tbody></table>
+<h3>Marcas de formato</h3>
+<p>En <b>Inicio → ¶ Mostrar todo</b> podemos visualizar espacios, marcas de párrafo, tabulaciones, saltos y otros caracteres no imprimibles. Estas marcas no se imprimen. Ayudan a descubrir por qué un documento parece estar mal colocado.</p>
+<p>No debemos alinear texto introduciendo muchos espacios. Para organizarlo correctamente existen las sangrías y las tabulaciones.</p>
+</div></details>
+
+<details class="topic"><summary>3. Regla, sangrías, espaciado y saltos de página</summary><div class="inside">
+<p>La regla horizontal se puede activar desde <b>Vista → Regla</b>. Permite modificar sangrías y establecer tabulaciones.</p>
+<h3>Tipos de sangría</h3>
+<ul><li><b>Izquierda:</b> desplaza el párrafo respecto al margen izquierdo.</li><li><b>Derecha:</b> separa el párrafo del margen derecho.</li><li><b>Primera línea:</b> desplaza solamente la primera línea.</li><li><b>Francesa:</b> deja la primera línea más a la izquierda y desplaza las siguientes.</li></ul>
+<p>Las sangrías se pueden establecer mediante las opciones de Párrafo o utilizando los indicadores de la regla.</p>
+<h3>Espaciado</h3>
+<p><b>Espaciado anterior</b> añade espacio antes del párrafo; <b>espaciado posterior</b> añade espacio después. El <b>interlineado</b> controla la separación entre las líneas de un mismo párrafo. No conviene pulsar Enter repetidamente para controlar la distancia entre párrafos.</p>
+<h3>Saltos de página</h3>
+<p>Para comenzar una página nueva se utiliza un salto de página, en lugar de pulsar Enter muchas veces. El material indica dos opciones: <b>Insertar → Páginas → Salto de página</b> o el atajo <b>Ctrl + Enter</b>.</p>
+<h3>Insertar la fecha</h3>
+<p>El material introductorio señala que en las versiones actuales de Word 365 la opción correspondiente se puede buscar desde la pestaña <b>Insertar</b>.</p>
+</div></details>
+
+<details class="topic"><summary>4. Tabulaciones y rellenos</summary><div class="inside">
+<p>Una <b>tabulación</b> es una posición horizontal previamente establecida a la que nos desplazamos pulsando la tecla Tab. Sirve para colocar información en posiciones concretas de una línea.</p>
+<p><b>Regla fundamental:</b> no debemos utilizar muchos espacios para crear columnas. El ancho de los espacios depende de la fuente y las columnas pueden desalinearse al modificar el texto, el tamaño de letra o los márgenes. Para alinear datos se utilizan tabulaciones o tablas.</p>
+<h3>La regla y el selector</h3>
+<p>Activa la regla desde <b>Vista → Mostrar → Regla</b>. En el extremo izquierdo aparece el selector de tabulaciones; cada clic cambia el tipo de tabulación.</p>
+<table><thead><tr><th>Tipo</th><th>Cómo coloca el texto</th><th>Uso indicado</th></tr></thead><tbody>
+<tr><td>Izquierda</td><td>El texto comienza en la posición y continúa hacia la derecha.</td><td>Nombres, conceptos, descripciones y códigos.</td></tr>
+<tr><td>Centrada</td><td>La posición marcada representa el centro del texto.</td><td>Encabezados o textos centrados respecto a una posición.</td></tr>
+<tr><td>Derecha</td><td>El texto termina exactamente en la posición del tabulador.</td><td>Números enteros o datos alineados por el extremo derecho.</td></tr>
+<tr><td>Decimal</td><td>Alinea los números por el separador decimal.</td><td>Cantidades numéricas.</td></tr>
+<tr><td>Barra</td><td>Inserta una línea vertical en la posición indicada.</td><td>Separadores visuales sin crear una tabla.</td></tr>
+</tbody></table>
+<h3>Crear tabulaciones desde la regla</h3>
+<ol><li>Activa la regla.</li><li>Pulsa el selector situado a la izquierda.</li><li>Elige el tipo de tabulación.</li><li>Haz clic en la posición deseada de la regla.</li><li>Escribe el contenido y pulsa Tab para desplazarte a la siguiente posición.</li></ol>
+<h3>Crear tabulaciones con medidas exactas</h3>
+<p>Accede a <b>Inicio → Párrafo → flecha de la esquina inferior derecha → Tabulaciones</b>. En el cuadro puedes establecer posición, alineación y relleno. El ejemplo del material utiliza 1 cm (izquierda), 5 cm (centrada), 9 cm (derecha) y 12 cm (decimal). Para cada posición: escribe la medida, elige alineación, pulsa <b>Establecer</b> y después introduce la siguiente. Al terminar, pulsa Aceptar.</p>
+<p>Las tabulaciones son una propiedad del párrafo. Antes de modificar las tabulaciones de varios párrafos, selecciona todos esos párrafos.</p>
+<h3>Modificar, eliminar y aplicar rellenos</h3>
+<p>Para modificar una tabulación puedes arrastrar su símbolo sobre la regla. Para eliminarla, arrastra el símbolo fuera de la regla o selecciónala en el cuadro Tabulaciones y pulsa <b>Eliminar</b>. <b>Eliminar todas</b> borra todas las posiciones configuradas.</p>
+<p>El relleno completa automáticamente el espacio hasta la siguiente tabulación. En el cuadro Tabulaciones se puede elegir ninguno, puntos, guiones o línea. Por ejemplo, Word puede completar los puntos entre el nombre de un artículo y su precio.</p>
+<p class="mini">Recuerda: Tab desplaza el cursor hasta una tabulación; la barra espaciadora simplemente introduce un espacio.</p>
+</div></details>
+
+<details class="topic"><summary>5. Letra capital y formato avanzado de caracteres</summary><div class="inside">
+<p>Una <b>letra capital</b> es una letra inicial de gran tamaño que ocupa varias líneas de un párrafo. Es habitual encontrarla en libros, revistas, periódicos y documentos de diseño editorial.</p>
+<h3>Insertar una letra capital</h3>
+<ol><li>Escribe el párrafo.</li><li>Coloca el cursor en el párrafo correspondiente.</li><li>Accede a <b>Insertar → Texto → Letra capital</b>.</li><li>Elige el formato deseado.</li></ol>
+<p>Word ofrece estas opciones:</p>
+<ul><li><b>Ninguna:</b> elimina la letra capital.</li><li><b>En texto:</b> la letra queda integrada dentro del párrafo y ocupa varias líneas.</li><li><b>En margen:</b> la letra aparece desplazada hacia el margen.</li></ul>
+<p>En <b>Opciones de letra capital</b> se pueden modificar la fuente, el número de líneas que ocupa y la distancia respecto al texto.</p>
+<p><b>No es lo mismo</b> aumentar el tamaño de la primera letra (por ejemplo, a 48 puntos) que crear una auténtica letra capital. La letra capital está diseñada para integrarse automáticamente con las primeras líneas del párrafo.</p>
+<h3>Formato avanzado de caracteres</h3>
+<p>El cuadro de diálogo Fuente se puede abrir mediante la pequeña flecha de la esquina del grupo Fuente. En las opciones avanzadas aparecen, entre otras, estas características:</p>
+<ul><li><b>Escala:</b> modifica horizontalmente la anchura de los caracteres. Una escala del 150 % produce caracteres más anchos.</li><li><b>Espaciado expandido:</b> aumenta la separación entre caracteres.</li><li><b>Espaciado comprimido:</b> reduce la separación entre caracteres. El ejercicio del material solicita practicar comprimido 2 puntos.</li><li><b>Posición elevada:</b> desplaza los caracteres hacia arriba.</li><li><b>Posición disminuida:</b> desplaza los caracteres hacia abajo.</li></ul>
+<p>El espaciado permite separar o acercar caracteres sin introducir espacios manualmente.</p>
+</div></details>
+
+<details class="topic"><summary>6. Creación y edición de tablas en Word 365</summary><div class="inside">
+<p>Una <b>tabla</b> organiza información mediante filas y columnas. La intersección entre una fila y una columna se llama <b>celda</b>. Una tabla de 3 columnas y 3 filas contiene 9 celdas.</p>
+<p>Las tabulaciones colocan texto en posiciones horizontales; una tabla crea una estructura real de celdas que podemos modificar individualmente.</p>
+<h3>Crear una tabla</h3>
+<ul><li><b>Cuadrícula visual:</b> Insertar → Tabla y seleccionar el número inicial de columnas y filas.</li><li><b>Insertar tabla:</b> Insertar → Tabla → Insertar tabla e indicar exactamente el número de columnas y filas.</li></ul>
+<p>No es necesario acertar desde el principio: posteriormente se pueden añadir o eliminar filas y columnas.</p>
+<h3>Desplazarse y seleccionar</h3>
+<ul><li><b>Tab:</b> avanza a la celda siguiente.</li><li><b>Mayús + Tab:</b> regresa a la celda anterior.</li><li>Si estamos en la última celda y pulsamos Tab, Word crea una nueva fila automáticamente.</li></ul>
+<p>Antes de modificar, selecciona el elemento correspondiente: una celda, varias celdas, una fila, una columna o toda la tabla.</p>
+<h3>Modificar la estructura y las dimensiones</h3>
+<p>Con el cursor dentro de una tabla aparecen las herramientas específicas. Desde <b>Presentación</b> podemos insertar filas encima o debajo, insertar columnas a la izquierda o derecha y eliminar celdas, filas, columnas o la tabla completa.</p>
+<p>El ancho de columnas y alto de filas se puede cambiar arrastrando los bordes o desde <b>Presentación → Tamaño de celda</b> para indicar medidas exactas. Las celdas no tienen que ser todas del mismo tamaño.</p>
+<h3>Combinar, dividir y alinear</h3>
+<p><b>Combinar celdas</b> une varias celdas seleccionadas mediante Presentación → Combinar celdas. <b>Dividir celdas</b> realiza la operación contraria y permite indicar cuántas filas y columnas crear.</p>
+<p>Dentro de las celdas Word ofrece nueve posiciones de alineación, combinando superior, centrado e inferior con izquierda, centro y derecha. Se configuran desde <b>Presentación → Alineación</b>.</p>
+<h3>Bordes, sombreado y formato</h3>
+<p>Los bordes permiten decidir qué líneas aparecen, su grosor y tipo. Que exista una celda no significa que todos sus bordes tengan que estar visibles.</p>
+<p>El <b>sombreado</b> cambia el fondo de una o varias celdas seleccionadas. El <b>color de fuente</b> cambia el color de las letras. Dentro de una celda también podemos aplicar tipo y tamaño de letra, negrita, cursiva, subrayado y alineación.</p>
+<h3>Fórmulas en tablas</h3>
+<p>Word puede realizar cálculos sencillos mediante <b>Presentación → Fórmula</b>. La fórmula habitual indicada es <code>=SUM(ABOVE)</code>, que suma los valores numéricos situados encima de la celda actual.</p>
+<table><thead><tr><th>Referencia</th><th>Zona que indica</th></tr></thead><tbody><tr><td>ABOVE</td><td>Encima de la celda actual.</td></tr><tr><td>BELOW</td><td>Debajo de la celda actual.</td></tr><tr><td>LEFT</td><td>A la izquierda de la celda actual.</td></tr><tr><td>RIGHT</td><td>A la derecha de la celda actual.</td></tr></tbody></table>
+<p>En el ejemplo de factura del material aparecen cálculos de importe, descuento (5 %), base imponible, IVA (16 %) y total factura.</p>
+<h3>Tablas para formularios</h3>
+<p>Las tablas también permiten diseñar documentos administrativos con zonas para datos personales, contacto, representación, EXPONE, SOLICITA, lugar, fecha y firma. La secuencia propuesta es: crear tablas, modificar dimensiones, combinar o dividir celdas y ajustar bordes y formato.</p>
+</div></details>
+
+<details class="topic"><summary>7. Índices automáticos en Word 365</summary><div class="inside">
+<p>Un <b>índice automático</b> es una lista de los apartados de un documento y de las páginas donde aparecen. Word lo genera a partir de los estilos aplicados a los títulos.</p>
+<h3>Paso 1. Aplicar estilos a los títulos</h3>
+<ul><li>Selecciona el título de un apartado.</li><li>En <b>Inicio → Estilos</b>, elige <b>Título 1</b> para los apartados principales.</li><li>Para los subapartados utiliza <b>Título 2</b>.</li></ul>
+<p>Ejemplo: «Hardware» puede ser Título 1 y «Memoria RAM» Título 2.</p>
+<h3>Paso 2. Insertar el índice</h3>
+<ol><li>Coloca el cursor donde quieras el índice, normalmente al principio.</li><li>Abre la pestaña <b>Referencias</b>.</li><li>Selecciona <b>Tabla de contenido → Tabla automática</b>.</li></ol>
+<p>Word generará el índice con los títulos y números de página.</p>
+<h3>Paso 3. Actualizar el índice</h3>
+<ol><li>Haz clic sobre el índice.</li><li>Selecciona <b>Actualizar tabla</b>.</li><li>Elige <b>Actualizar toda la tabla</b> y pulsa Aceptar.</li></ol>
+<p>No edites el índice a mano: modifica los títulos del documento y después actualiza toda la tabla. Si se añade un apartado, por ejemplo «Periféricos», hay que actualizar el índice para que aparezca.</p>
+<div class="mini"><b>Para recordar:</b> Título 1 = apartados principales; Título 2 = subapartados; Referencias → Tabla de contenido = insertar índice automático.</div>
+</div></details>
+
+<details class="topic"><summary>8. Fondos, marcas de agua, temas, encabezados y pies de página</summary><div class="inside">
+<h3>Fondo de un documento</h3>
+<p>Es el aspecto visual que aparece detrás o alrededor del contenido. Puede incluir colores, imágenes, texturas o marcas de agua. Sirve para decorar, identificar o destacar un documento. En Word 365 estas opciones se encuentran principalmente en <b>Diseño</b>.</p>
+<h3>Marcas de agua</h3>
+<p>Una <b>marca de agua</b> es un texto o imagen tenue situado detrás del contenido. Puede repetirse en todas las páginas y se utiliza, por ejemplo, para indicar «BORRADOR» o «CONFIDENCIAL», o identificar una organización. Se imprime con el documento y debe verse sin impedir la lectura.</p>
+<p>Para insertarla: <b>Diseño → Marca de agua</b>, elige un modelo o selecciona Marca de agua personalizada. Para quitarla, utiliza <b>Quitar marca de agua</b>.</p>
+<h3>Color y bordes de página</h3>
+<p>Para cambiar el color: <b>Diseño → Color de página</b> y elige un color de la paleta o Más colores. Se recomienda utilizar fondos claros y texto oscuro, evitar imágenes que compitan con el contenido y comprobar la vista previa. El color de página puede no imprimirse si no está activada la impresión de fondos.</p>
+<p>Para añadir un borde: <b>Diseño → Bordes de página</b>. Elige cuadro, sombra o configuración personalizada; modifica estilo, color y ancho; revisa Vista previa y el campo Aplicar a y pulsa Aceptar.</p>
+<h3>Temas y conjuntos de estilos</h3>
+<p>Un <b>tema</b> combina colores, fuentes y efectos para mantener un aspecto similar en todo el documento. Se aplica desde <b>Diseño → Temas</b> y se pueden modificar sus colores y fuentes.</p>
+<p>Los <b>conjuntos de estilos</b> son grupos de formatos preparados para títulos, subtítulos y párrafos. Se eligen en <b>Diseño → Formato del documento</b> y permiten evitar cambios manuales en cada fragmento. Recuerda: tema = diseño general; estilos = formato coherente del texto.</p>
+<h3>Encabezados y pies de página</h3>
+<p>El <b>encabezado</b> es la zona superior de la página y el <b>pie de página</b> es la zona inferior. Pueden incluir título, autor, logotipo o número de página y normalmente se repiten en las páginas del documento.</p>
+<p>Para crearlos: <b>Insertar → Encabezado</b> o <b>Pie de página</b>, escoge un diseño, escribe la información y pulsa Cerrar encabezado y pie de página. Para editarlos después, haz doble clic en su zona.</p>
+<h3>Números de página</h3>
+<p>Accede a <b>Insertar → Número de página</b>. Puedes elegir arriba, abajo, márgenes o posición actual y seleccionar un estilo. En Formato del número de página se puede cambiar el formato o el inicio. Para eliminarlos, utiliza Quitar números de página.</p>
+<h3>Opciones especiales y secciones</h3>
+<ul><li><b>Primera página diferente:</b> permite una portada sin el mismo encabezado o pie.</li><li><b>Páginas pares e impares diferentes:</b> útil en documentos a doble cara.</li><li><b>Saltos de sección:</b> permiten utilizar encabezados distintos en diferentes partes.</li><li><b>Vincular al anterior:</b> conecta el encabezado o pie con la sección previa.</li></ul>
+<p>Para crear un encabezado distinto en una sección: inserta un salto de sección, abre el encabezado o pie de la nueva sección, desactiva <b>Vincular al anterior</b>, escribe el nuevo contenido y comprueba ambas secciones.</p>
+<div class="mini"><b>Resumen de menús:</b> Diseño → marcas de agua, color de página, bordes, temas y estilos. Insertar → encabezado, pie y número de página. Doble clic en el margen superior o inferior → editar encabezados y pies.</div>
+</div></details>
+</template>
+<template id="key-ofimatica-ra1">
+<div class="panel">
+<h2>Repaso rápido · Ofimática · RA1</h2>
+<ul>
+<li><b>Procesador de textos:</b> permite crear, editar, dar formato, guardar, imprimir y compartir documentos.</li>
+<li><b>Formato habitual de Word:</b> .docx.</li>
+<li><b>Ventana de Word:</b> barra de título, pestañas, área del documento, regla y barra de estado.</li>
+<li><b>Seleccionar antes de modificar:</b> primero selecciona el texto y después aplica el formato.</li>
+<li><b>Formato de carácter:</b> cambia letras. <b>Formato de párrafo:</b> afecta al párrafo completo.</li>
+<li><b>Alineaciones:</b> izquierda, centrada, derecha y justificada.</li>
+<li><b>Mostrar todo (¶):</b> muestra espacios, marcas de párrafo, tabulaciones y saltos; no se imprimen.</li>
+<li><b>Sangrías:</b> izquierda, derecha, primera línea y francesa.</li>
+<li><b>Espaciado:</b> anterior, posterior e interlineado.</li>
+<li><b>Salto de página:</b> Insertar → Salto de página o Ctrl + Enter.</li>
+<li><b>Tabulación:</b> posición horizontal fija. No alinees columnas con espacios.</li>
+<li><b>Tipos de tabulación:</b> izquierda, centrada, derecha, decimal y barra.</li>
+<li><b>Rellenos:</b> ninguno, puntos, guiones o línea.</li>
+<li><b>Letra capital:</b> Insertar → Texto → Letra capital; opciones En texto y En margen.</li>
+<li><b>Formato avanzado:</b> escala, espaciado expandido/comprimido y posición elevada/disminuida.</li>
+<li><b>Tabla:</b> estructura de filas, columnas y celdas. Tab avanza; Mayús + Tab retrocede.</li>
+<li><b>Tab en última celda:</b> crea una fila nueva.</li>
+<li><b>Tablas:</b> insertar/eliminar filas y columnas, cambiar dimensiones, combinar/dividir celdas, alinear, bordes y sombreado.</li>
+<li><b>Fórmula:</b> Presentación → Fórmula; =SUM(ABOVE) suma los valores de encima.</li>
+<li><b>Índice automático:</b> aplicar Título 1 y Título 2; Referencias → Tabla de contenido → Tabla automática.</li>
+<li><b>Actualizar índice:</b> Actualizar tabla → Actualizar toda la tabla.</li>
+<li><b>Diseño:</b> marca de agua, color de página, bordes, temas y conjuntos de estilos.</li>
+<li><b>Encabezado:</b> parte superior. <b>Pie:</b> parte inferior. Se editan con doble clic.</li>
+<li><b>Número de página:</b> Insertar → Número de página.</li>
+<li><b>Secciones:</b> desactivar Vincular al anterior para tener encabezados o pies independientes.</li>
+</ul>
+</div>
+</template>
+<script src="assets/js/apuntes.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+/* ===== Calendario Firebase: estilos independientes ===== */
+#calendarApp .calendar-shell{display:grid;gap:16px}
+#calendarApp .calendar-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+#calendarApp .calendar-month-title{font-size:1.25rem;font-weight:850}
+#calendarApp .calendar-weekdays,#calendarApp .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+#calendarApp .calendar-weekdays div{text-align:center;padding:8px 2px;color:var(--muted);font-size:.8rem;font-weight:800}
+#calendarApp .calendar-day{min-height:92px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:8px;border-radius:11px;background:var(--bg);border:1px solid var(--line);min-width:0}
+#calendarApp .calendar-day.outside{opacity:.35}
+#calendarApp .calendar-day.today{border-color:var(--accent)}
+#calendarApp .calendar-day.selected{background:var(--soft);border:2px solid var(--accent);padding:7px}
+#calendarApp .calendar-day .day-number{font-weight:850}
+#calendarApp .calendar-day .day-events{font-size:.72rem;color:var(--accent);font-weight:750;line-height:1.25}
+#calendarApp .calendar-day .event-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:4px}
+#calendarApp .calendar-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+#calendarApp label{display:block;font-weight:700}
+#calendarApp input,#calendarApp textarea,#calendarApp select{width:100%;margin-top:5px;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+#calendarApp textarea{min-height:78px;resize:vertical}
+#calendarApp .calendar-events{display:grid;gap:9px}
+#calendarApp .calendar-event{border:1px solid var(--line);border-left:4px solid var(--accent);padding:12px;border-radius:11px;background:var(--bg)}
+#calendarApp .calendar-event h4{margin:0 0 4px;font-size:1rem}
+#calendarApp .calendar-event p{margin:4px 0;color:var(--muted)}
+#calendarApp .calendar-event-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+#calendarApp .calendar-event-actions button{font-size:.86rem;padding:6px 9px}
+#calendarApp .calendar-muted{color:var(--muted);font-size:.92rem}
+#calendarApp .calendar-status{padding:11px 13px;border-radius:10px;background:var(--soft);color:var(--text);margin:0 0 12px}
+#calendarApp .calendar-status.error{background:color-mix(in srgb,var(--bad) 12%,var(--panel));color:var(--bad)}
+#calendarApp .calendar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#calendarApp .calendar-actions select{min-width:220px;max-width:100%}
+#calendarApp .calendar-config-steps{padding-left:22px}
+#calendarApp .calendar-config-steps li{margin:8px 0}
+@media(max-width:640px){
+ #calendarApp .calendar-day{min-height:66px;padding:5px;font-size:.88rem}
+ #calendarApp .calendar-day.selected{padding:4px}
+ #calendarApp .calendar-day .day-events{font-size:.62rem}
+ #calendarApp .calendar-weekdays,#calendarApp .calendar-grid{gap:3px}
+}

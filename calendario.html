@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendarios · Estudio</title>
+<script src="assets/js/theme.js"></script>
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/calendar.css">
+</head>
+<body>
+<header><div class="hero">
+<h1>📅 Calendario de clase</h1>
+<p>Consulta los calendarios y eventos. El administrador puede gestionar su contenido.</p>
+<div class="toolbar">
+<button type="button" onclick="location.href='index.html'">🏠 Inicio</button>
+<button type="button" onclick="location.href='apuntes.html'">📚 Apuntes</button>
+</div>
+</div></header>
+<main><section id="calendarApp">
+  <div class="panel">
+    <div class="calendar-toolbar">
+      <div><h2>📅 Calendarios</h2><p class="calendar-muted">Consulta los calendarios sin iniciar sesión. Solo el administrador puede crear o modificar contenido.</p></div>
+      <div class="calendar-actions"><button id="calShowLoginBtn" type="button">🔐 Acceso administrador</button><button id="calLogoutBtn" class="hidden" type="button">Cerrar sesión</button><button id="calendarBackBtn" type="button">← Volver al inicio</button></div>
+    </div>
+    <p id="calStatus" class="calendar-status" role="status">Comprobando la configuración de Firebase…</p>
+  </div>
+
+  <div id="calConfigGuide" class="panel">
+    <h2>Conecta este calendario con tu proyecto Firebase</h2>
+    <p>Antes de usar el calendario, configura una sola vez tu proyecto. No escribas tu contraseña en el HTML.</p>
+    <ol class="calendar-config-steps">
+      <li>En Firebase crea un proyecto y añade una aplicación web. Copia los valores de <b>firebaseConfig</b>.</li>
+      <li>En <b>Authentication → Sign-in method</b>, activa <b>Correo electrónico/contraseña</b>.</li>
+      <li>En <b>Authentication → Users</b>, crea tu usuario administrador con tu correo y una contraseña que solo tú conozcas. Copia su UID.</li>
+      <li>Crea la base de datos en <b>Firestore Database</b> y publica las reglas del archivo <b>firestore.rules</b> del proyecto. Sustituye el UID de ejemplo por tu UID real.</li>
+      <li>En <b>assets/js/calendario.js</b>, pega la configuración pública de tu aplicación (<b>firebaseConfig</b>) y tu UID (<b>ADMIN_UID</b>). No pegues ahí la contraseña.</li>
+      <li>Publica la página (GitHub Pages o Firebase Hosting) o ejecútala en un dominio autorizado (por ejemplo, localhost). Añade ese dominio (por ejemplo, <b>tuusuario.github.io</b>) en <b>Authentication → Settings → Authorized domains</b>.</li>
+    </ol>
+    <p class="calendar-muted">Firebase Authentication gestiona la contraseña de forma segura. Firestore almacena los calendarios y sus eventos. Cualquier visitante puede consultar los calendarios; las reglas impiden que otros usuarios creen o modifiquen calendarios y eventos.</p>
+  </div>
+
+  <div id="calLoginPanel" class="panel hidden">
+    <div class="calendar-toolbar"><h2>Acceso de administrador</h2><button id="calCloseLoginBtn" type="button">Cerrar</button></div>
+    <p class="calendar-muted">Inicia sesión con el correo y la contraseña de tu usuario administrador de Firebase. Los visitantes no necesitan iniciar sesión para consultar el calendario.</p>
+    <form id="calLoginForm">
+      <div class="calendar-fields">
+        <label>Correo electrónico<input id="calEmail" type="email" autocomplete="username" required></label>
+        <label>Contraseña<input id="calPassword" type="password" autocomplete="current-password" required></label>
+      </div>
+      <div class="btnrow"><button class="primary" type="submit">🔐 Iniciar sesión</button></div>
+    </form>
+  </div>
+
+  <div id="calAdminPanel" class="calendar-shell">
+    <div class="panel">
+      <div class="calendar-toolbar">
+        <div><h2>Calendario</h2><p id="calSignedUser" class="calendar-muted">Vista pública: consulta los calendarios sin iniciar sesión.</p></div>
+      </div>
+      <form id="calCreateForm" class="hidden">
+        <h3>Crear un calendario nuevo</h3>
+        <div class="calendar-fields">
+          <label>Nombre del calendario<input id="calNewName" maxlength="70" placeholder="Ej. Calendario del curso" required></label>
+          <label>Descripción (opcional)<input id="calNewDescription" maxlength="180" placeholder="Ej. Exámenes, entregas y tareas"></label>
+        </div>
+        <div class="btnrow"><button class="primary" type="submit">＋ Crear calendario</button></div>
+      </form>
+    </div>
+
+    <div id="calWorkspace" class="calendar-shell hidden">
+      <div class="panel">
+        <div class="calendar-toolbar">
+          <h2>Vista mensual</h2>
+          <div class="calendar-actions">
+            <label for="calPicker">Calendario</label>
+            <select id="calPicker" aria-label="Seleccionar calendario"></select>
+          </div>
+        </div>
+        <div class="calendar-toolbar" style="margin:14px 0">
+          <div class="calendar-actions">
+            <button id="calPrevMonth" type="button">← Mes anterior</button>
+            <button id="calToday" type="button">Hoy</button>
+            <button id="calNextMonth" type="button">Mes siguiente →</button>
+          </div>
+          <div id="calMonthTitle" class="calendar-month-title"></div>
+        </div>
+        <div class="calendar-weekdays"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+        <div id="calMonthGrid" class="calendar-grid"></div>
+        <p class="calendar-muted">Selecciona un día para ver, añadir o modificar sus eventos.</p>
+      </div>
+
+      <div class="panel">
+        <h2 id="calEventsHeading">Eventos</h2>
+        <div id="calEventsList" class="calendar-events"></div>
+      </div>
+
+      <div class="panel hidden" id="calEventFormPanel">
+        <h2 id="calEventFormHeading">Añadir evento</h2>
+        <form id="calEventForm">
+          <div class="calendar-fields">
+            <label>Nombre del evento<input id="calEventTitle" maxlength="100" required placeholder="Ej. Examen de Ofimática"></label>
+            <label>Fecha<input id="calEventDate" type="date" required></label>
+            <label>Hora de inicio (opcional)<input id="calEventStart" type="time"></label>
+            <label>Hora de finalización (opcional)<input id="calEventEnd" type="time"></label>
+          </div>
+          <label style="margin-top:12px">Descripción (opcional)<textarea id="calEventDescription" maxlength="1000" placeholder="Añade detalles, aula, material que debes preparar…"></textarea></label>
+          <div class="btnrow">
+            <button class="primary" type="submit" id="calSaveEventBtn">Guardar evento</button>
+            <button type="button" id="calCancelEditBtn" class="hidden">Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="calNoCalendars" class="panel hidden"><p>Todavía no has creado ningún calendario. Usa el formulario anterior para crear el primero.</p></div>
+  </div>
+</section></main>
+<footer>Calendario conectado a Firebase · Consulta pública y gestión restringida al administrador</footer>
+<script type="module" src="assets/js/calendario.js"></script>
+</body>
+</html>
